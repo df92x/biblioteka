@@ -72,6 +72,7 @@ label input{color:var(--tx)}
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const KEY='biblioteka.books';
+const PROXY='https://api.allorigins.win/raw?url=';
 const GBKEY='';// opcjonalny klucz API Google Books (zwieksza limit zapytan)
 let books=[];try{books=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
 const live=()=>books.filter(b=>!b.deleted);
@@ -116,7 +117,7 @@ $('file').onchange=e=>{
   const u=URL.createObjectURL(f);setCoverFromSrc(u).then(()=>URL.revokeObjectURL(u));
 };
 async function coverFromUrl(url){
-  try{const b=await(await fetch(url)).blob();const u=URL.createObjectURL(b);const ok=await setCoverFromSrc(u);URL.revokeObjectURL(u);if(ok)return}catch(e){}
+  for(const x of [url,PROXY+encodeURIComponent(url)]){try{const b=await(await fetch(x)).blob();const u=URL.createObjectURL(b);const ok=await setCoverFromSrc(u);URL.revokeObjectURL(u);if(ok)return}catch(e){}}
   cover=url;showPrev();
 }
 async function isbnLookup(){
@@ -125,6 +126,18 @@ async function isbnLookup(){
   st.textContent='Szukam…';
   let t='',a='',img='',d='';
   try{
+    const u='https://www.poczytaj.pl/index.php?akcja=pokaz_ksiazki&szukaj='+n;
+    const h=await(await fetch(PROXY+encodeURIComponent(u))).text();
+    const d=new DOMParser().parseFromString(h,'text/html');
+    const row=d.querySelector('.lista_poz');
+    if(row&&h.includes('lista_okl')){
+      const clean=x=>x.textContent.replace(/\s+/g,' ').trim();
+      const ti=row.querySelector('a.tytul'),au=row.querySelector('.autor_lista'),im=d.querySelector('.lista_okl img');
+      if(ti){t=clean(ti);a=au?clean(au).replace(/\s+/g,' '):''}
+      if(im&&im.getAttribute('src')&&im.getAttribute('src').includes('staticl'))img=im.getAttribute('src').replace('-s.jpg','-l.jpg');
+    }
+  }catch(e){}
+  if(!t)try{
     const g=await(await fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+n+(GBKEY?'&key='+GBKEY:''))).json();
     const v=g.items&&g.items[0]&&g.items[0].volumeInfo;
     if(v){t=v.title+(v.subtitle?': '+v.subtitle:'');a=(v.authors||[]).join(', ');img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail)||'';img=img.replace('http://','https://').replace('&edge=curl','').replace('zoom=1','zoom=2')}
@@ -139,7 +152,7 @@ async function isbnLookup(){
   if(!t){
     try{
       const u='https://data.bn.org.pl/api/institutions/bibs.json?limit=1&isbnIssn='+n;
-      const j=await(await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u))).json();
+      const j=await(await fetch(PROXY+encodeURIComponent(u))).json();
       const v=j.bibs&&j.bibs[0];
       if(v){
         t=v.title.split(' / ')[0].replace(/[\s:;.,\/]+$/,'');
