@@ -147,15 +147,7 @@ async function sync(){
     if(fileId)await api('https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body});
     else{const bd='b'+Date.now();
       await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+bd},
-      body:'--'+bd+'
-Content-Type: application/json
-
-'+JSON.stringify({name:FN,parents:['appDataFolder']})+'
---'+bd+'
-Content-Type: application/json
-
-'+body+'
---'+bd+'--'})}
+      body:['--'+bd,'Content-Type: application/json','',JSON.stringify({name:FN,parents:['appDataFolder']}),'--'+bd,'Content-Type: application/json','',body,'--'+bd+'--',''].join(String.fromCharCode(13,10))})}
     setSt('Zsynchronizowano '+new Date().toLocaleTimeString('pl-PL'));
   }catch(e){setSt('Błąd synchronizacji ('+e.message+')')}
 }
