@@ -72,6 +72,7 @@ label input{color:var(--tx)}
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const KEY='biblioteka.books';
+const GBKEY='';// opcjonalny klucz API Google Books (zwieksza limit zapytan)
 let books=[];try{books=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
 const live=()=>books.filter(b=>!b.deleted);
 let editId=null,cover='';
@@ -124,7 +125,7 @@ async function isbnLookup(){
   st.textContent='Szukam…';
   let t='',a='',img='',d='';
   try{
-    const g=await(await fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+n)).json();
+    const g=await(await fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+n+(GBKEY?'&key='+GBKEY:''))).json();
     const v=g.items&&g.items[0]&&g.items[0].volumeInfo;
     if(v){t=v.title+(v.subtitle?': '+v.subtitle:'');a=(v.authors||[]).join(', ');img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail)||'';img=img.replace('http://','https://').replace('&edge=curl','').replace('zoom=1','zoom=2')}
   }catch(e){}
@@ -135,10 +136,23 @@ async function isbnLookup(){
       if(v){t=t||v.title;a=a||(v.authors||[]).map(x=>x.name).join(', ');img=img||(v.cover&&(v.cover.large||v.cover.medium))||''}
     }catch(e){}
   }
+  if(!t){
+    try{
+      const u='https://data.bn.org.pl/api/institutions/bibs.json?limit=1&isbnIssn='+n;
+      const j=await(await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u))).json();
+      const v=j.bibs&&j.bibs[0];
+      if(v){
+        t=v.title.split(' / ')[0].replace(/[\s:;.,\/]+$/,'');
+        const f=(v.author||'').split(' (')[0].trim();
+        a=f.includes(', ')?f.split(', ').reverse().join(' '):f;
+      }
+    }catch(e){}
+  }
   if(!t){st.textContent='Nie znaleziono książki o tym ISBN';return}
   $('title').value=t;$('author').value=a;
   st.textContent=img?'Znaleziono ✓':'Znaleziono (bez okładki — dodaj zdjęcie)';
   if(img)await coverFromUrl(img);
+  else if(await setCoverFromSrc('https://covers.openlibrary.org/b/isbn/'+n+'-L.jpg?default=false'))st.textContent='Znaleziono ✓';
 }
 $('isbnbtn').onclick=isbnLookup;
 let stream=null,scanning=false,zxr=null;
