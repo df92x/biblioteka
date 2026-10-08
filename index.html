@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moja biblioteka</title>
+<style>
+:root{--bg:#f6f1e9;--card:#fff;--tx:#2b2520;--mut:#8a7f73;--ac:#8b4a2b;--bd:#e4dccf}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1917;--card:#292524;--tx:#f0e9df;--mut:#a39a8e;--ac:#d98c5f;--bd:#3d3733}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,sans-serif}
+header{max-width:1000px;margin:0 auto;padding:24px 16px 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:1.6rem}
+.count{color:var(--mut);font-size:.9rem}
+.bar{max-width:1000px;margin:0 auto;padding:8px 16px;display:flex;gap:8px;flex-wrap:wrap}
+input,select,button{font:inherit;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)}
+button{cursor:pointer}
+button.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+#q{flex:1;min-width:140px}
+main{max-width:1000px;margin:0 auto;padding:8px 16px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+.book{background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.cover{aspect-ratio:2/3;background:var(--bd);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:2.5rem;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover}
+.info{padding:10px;flex:1}
+.info b{display:block}
+.info small{color:var(--mut);display:block}
+.acts{display:flex;border-top:1px solid var(--bd)}
+.acts button{flex:1;border:0;border-radius:0;background:none;font-size:.85rem;color:var(--mut)}
+.acts button:hover{color:var(--ac)}
+.empty{grid-column:1/-1;text-align:center;color:var(--mut);padding:48px 0}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);width:min(420px,92vw);padding:20px}
+dialog::backdrop{background:#0008}
+form{display:grid;gap:12px}
+label{display:grid;gap:4px;font-size:.9rem;color:var(--mut)}
+label input{color:var(--tx)}
+.prev{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;border:1px solid var(--bd);display:none}
+.row{display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+<header><h1>📚 Moja biblioteka</h1><span class="count" id="count"></span></header>
+<div class="bar"><button id="gbtn">☁ Zaloguj przez Google</button><button id="exp">Eksport JSON</button><button id="imp">Import JSON</button><span class="count" id="st" style="align-self:center"></span><input id="impf" type="file" accept=".json" hidden></div>
+<div class="bar">
+  <input id="q" type="search" placeholder="Szukaj tytułu lub autora…">
+  <select id="sort">
+    <option value="date-desc">Data: najnowsze</option>
+    <option value="date-asc">Data: najstarsze</option>
+    <option value="title">Tytuł A–Z</option>
+  </select>
+  <button class="pri" id="add">+ Dodaj książkę</button>
+</div>
+<main id="list"></main>
+
+<dialog id="dlg">
+  <form id="f" method="dialog">
+    <h2 id="dt" style="margin:0">Nowa książka</h2>
+    <label>Tytuł<input id="title" required></label>
+    <label>Autor<input id="author"></label>
+    <label>Data przeczytania<input id="date" type="date" required></label>
+    <label>Okładka (miniaturka)<input id="file" type="file" accept="image/*"></label>
+    <img id="prev" class="prev" alt="">
+    <div class="row">
+      <button type="button" id="cancel">Anuluj</button>
+      <button class="pri" type="submit">Zapisz</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const KEY='biblioteka.books';
+let books=[];try{books=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
+const live=()=>books.filter(b=>!b.deleted);
+let editId=null,cover='';
+const $=id=>document.getElementById(id);
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(books))}catch(e){alert('Brak miejsca w pamięci przeglądarki — usuń część okładek.')}};
+let t;const save=()=>{saveLocal();clearTimeout(t);t=setTimeout(sync,1500)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function render(){
+  const q=$('q').value.toLowerCase(),s=$('sort').value;
+  let l=live().filter(b=>(b.title+' '+b.author).toLowerCase().includes(q));
+  l.sort((a,b)=>s==='title'?a.title.localeCompare(b.title,'pl'):s==='date-asc'?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
+  $('count').textContent='Przeczytane: '+live().length;
+  $('list').innerHTML=l.length?l.map(b=>`<div class="book">
+    <div class="cover">${b.cover?`<img src="${b.cover}" alt="">`:'📖'}</div>
+    <div class="info"><b>${esc(b.title)}</b>${b.author?`<small>${esc(b.author)}</small>`:''}<small>${new Date(b.date).toLocaleDateString('pl-PL')}</small></div>
+    <div class="acts"><button onclick="edit('${b.id}')">Edytuj</button><button onclick="del('${b.id}')">Usuń</button></div>
+  </div>`).join(''):'<div class="empty">Brak książek. Dodaj pierwszą!</div>';
+}
+function open_(b){
+  editId=b?b.id:null;cover=b?b.cover:'';
+  $('dt').textContent=b?'Edytuj książkę':'Nowa książka';
+  $('title').value=b?b.title:'';$('author').value=b?b.author:'';
+  $('date').value=b?b.date:new Date().toISOString().slice(0,10);
+  $('file').value='';showPrev();$('dlg').showModal();
+}
+function showPrev(){$('prev').style.display=cover?'block':'none';$('prev').src=cover}
+function edit(id){open_(live().find(b=>b.id===id))}
+function del(id){if(confirm('Usunąć tę książkę?')){books=books.map(b=>b.id===id?{id,deleted:true,updated:Date.now()}:b);save();render()}}
+
+$('file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image(),u=URL.createObjectURL(f);
+  img.onload=()=>{
+    const w=300,h=Math.round(w*1.5),c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d'),r=Math.max(w/img.width,h/img.height),sw=w/r,sh=h/r;
+    x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,w,h);
+    cover=c.toDataURL('image/jpeg',.8);URL.revokeObjectURL(u);showPrev();
+  };img.src=u;
+};
+$('f').onsubmit=()=>{
+  const d={title:$('title').value.trim(),author:$('author').value.trim(),date:$('date').value,cover,updated:Date.now()};
+  if(editId)books=books.map(b=>b.id===editId?{...b,...d}:b);
+  else books.push({id:Date.now().toString(36),...d});
+  save();render();
+};
+$('add').onclick=()=>open_();
+$('cancel').onclick=()=>$('dlg').close();
+$('q').oninput=$('sort').onchange=render;
+
+// ---- Synchronizacja z Google Drive (appDataFolder) ----
+const FN='biblioteka.json',SCOPE='https://www.googleapis.com/auth/drive.appdata';
+let tok=null,tokExp=0,client=null,fileId=null;
+const setSt=m=>$('st').textContent=m;
+const cid=()=>localStorage.getItem('biblioteka.cid')||'';
+function merge(a){const m=new Map();[...books,...a].forEach(b=>{const o=m.get(b.id);if(!o||(b.updated||0)>(o.updated||0))m.set(b.id,b)});books=[...m.values()]}
+function login(){
+  if(!window.google){setSt('Ładowanie Google…');return}
+  let id=cid();if(!id){id=prompt('Wklej Google OAuth Client ID (instrukcja w README.md):');if(!id)return;localStorage.setItem('biblioteka.cid',id.trim())}
+  client=google.accounts.oauth2.initTokenClient({client_id:cid(),scope:SCOPE,callback:r=>{
+    if(r.error){setSt('Błąd logowania');return}
+    tok=r.access_token;tokExp=Date.now()+(r.expires_in-60)*1000;localStorage.setItem('biblioteka.on','1');$('gbtn').textContent='☁ Zsynchronizuj teraz';sync()}});
+  client.requestAccessToken({prompt:localStorage.getItem('biblioteka.on')?'':'consent'});
+}
+async function api(url,o={}){const r=await fetch(url,{...o,headers:{Authorization:'Bearer '+tok,...(o.headers||{})}});if(!r.ok)throw new Error(r.status);return r}
+async function sync(){
+  if(!tok||Date.now()>tokExp){if(localStorage.getItem('biblioteka.on')){setSt('Sesja wygasła — kliknij „Zaloguj”');$('gbtn').textContent='☁ Zaloguj przez Google'}return}
+  try{
+    setSt('Synchronizuję…');
+    const q=encodeURIComponent("name='"+FN+"'");
+    const l=await(await api('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id)&q='+q)).json();
+    fileId=l.files[0]&&l.files[0].id;
+    if(fileId){const rem=await(await api('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media')).json();merge(rem)}
+    saveLocal();render();
+    const body=JSON.stringify(books);
+    if(fileId)await api('https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body});
+    else{const bd='b'+Date.now();
+      await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+bd},
+      body:'--'+bd+'
+Content-Type: application/json
+
+'+JSON.stringify({name:FN,parents:['appDataFolder']})+'
+--'+bd+'
+Content-Type: application/json
+
+'+body+'
+--'+bd+'--'})}
+    setSt('Zsynchronizowano '+new Date().toLocaleTimeString('pl-PL'));
+  }catch(e){setSt('Błąd synchronizacji ('+e.message+')')}
+}
+$('gbtn').onclick=()=>tok?sync():login();
+if(localStorage.getItem('biblioteka.on')){$('gbtn').textContent='☁ Zaloguj ponownie';setSt('Kliknij, by wznowić synchronizację')}
+// ---- Kopia zapasowa ----
+$('exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(books)],{type:'application/json'}));a.download='biblioteka-'+new Date().toISOString().slice(0,10)+'.json';a.click()};
+$('imp').onclick=()=>$('impf').click();
+$('impf').onchange=async e=>{try{merge(JSON.parse(await e.target.files[0].text()));save();render()}catch(x){alert('Niepoprawny plik')}e.target.value=''};
+render();
+</script>
+</body>
+</html>
