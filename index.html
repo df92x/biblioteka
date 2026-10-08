@@ -213,7 +213,7 @@ $('q').oninput=$('sort').onchange=render;
 const FN='biblioteka.json',SCOPE='https://www.googleapis.com/auth/drive.appdata';
 let tok=null,tokExp=0,client=null,fileId=null;
 const setSt=m=>$('st').textContent=m;
-const cid=()=>localStorage.getItem('biblioteka.cid')||'';
+const cid=()=>'566153575236-ehvimnjfblq87227v4qqte2enh3hqvpt.apps.googleusercontent.com';
 function merge(a){const m=new Map();[...books,...a].forEach(b=>{const o=m.get(b.id);if(!o||(b.updated||0)>(o.updated||0))m.set(b.id,b)});books=[...m.values()]}
 function login(){
   if(!window.google){setSt('Ładowanie Google…');return}
