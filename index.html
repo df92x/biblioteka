@@ -228,7 +228,7 @@ function login(){
   let id=cid();if(!id){id=prompt('Wklej Google OAuth Client ID (instrukcja w README.md):');if(!id)return;localStorage.setItem('biblioteka.cid',id.trim())}
   client=google.accounts.oauth2.initTokenClient({client_id:cid(),scope:SCOPE,callback:r=>{
     if(r.error){setSt('Błąd logowania');return}
-    tok=r.access_token;tokExp=Date.now()+(r.expires_in-60)*1000;localStorage.setItem('biblioteka.on','1');$('gbtn').textContent='☁ Zsynchronizuj teraz';sync()}});
+    tok=r.access_token;tokExp=Date.now()+(r.expires_in-60)*1000;try{localStorage.setItem('biblioteka.tok',JSON.stringify({t:tok,e:tokExp}))}catch(e){}localStorage.setItem('biblioteka.on','1');$('gbtn').textContent='☁ Zsynchronizuj teraz';sync()}});
   client.requestAccessToken({prompt:localStorage.getItem('biblioteka.on')?'':'consent'});
 }
 async function api(url,o={}){const r=await fetch(url,{...o,headers:{Authorization:'Bearer '+tok,...(o.headers||{})}});if(!r.ok)throw new Error(r.status);return r}
@@ -250,7 +250,12 @@ async function sync(){
   }catch(e){setSt('Błąd synchronizacji ('+e.message+')')}
 }
 $('gbtn').onclick=()=>tok?sync():login();
-if(localStorage.getItem('biblioteka.on')){$('gbtn').textContent='☁ Zaloguj ponownie';setSt('Kliknij, by wznowić synchronizację')}
+if(localStorage.getItem('biblioteka.on')){
+  try{const o=JSON.parse(localStorage.getItem('biblioteka.tok'));if(o&&o.e>Date.now()){tok=o.t;tokExp=o.e}}catch(e){}
+  if(tok){$('gbtn').textContent='☁ Zsynchronizuj teraz';sync()}
+  else{$('gbtn').textContent='☁ Zaloguj ponownie';setSt('Kliknij gdziekolwiek, aby wznowić synchronizację');
+    document.addEventListener('pointerdown',e=>{if(!tok&&e.target.id!=='gbtn')login()},{once:true})}
+}
 // ---- Kopia zapasowa ----
 $('exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(books)],{type:'application/json'}));a.download='biblioteka-'+new Date().toISOString().slice(0,10)+'.json';a.click()};
 $('imp').onclick=()=>$('impf').click();
