@@ -54,7 +54,8 @@ label input{color:var(--tx)}
 <dialog id="dlg">
   <form id="f" method="dialog">
     <h2 id="dt" style="margin:0">Nowa książka</h2>
-    <label>ISBN (opcjonalnie)<span style="display:flex;gap:6px"><input id="isbn" inputmode="numeric" placeholder="np. 9788324631766" style="flex:1;min-width:0"><button type="button" id="isbnbtn">Szukaj</button></span></label>
+    <label>ISBN (opcjonalnie)<span style="display:flex;gap:6px"><input id="isbn" inputmode="numeric" placeholder="np. 9788324631766" style="flex:1;min-width:0"><button type="button" id="isbnbtn">Szukaj</button><button type="button" id="scanbtn" title="Skanuj kod kreskowy">📷</button></span></label>
+    <div id="scanbox" style="display:none"><video id="vid" playsinline muted style="width:100%;border-radius:8px;background:#000"></video><small style="color:var(--mut)">Skieruj aparat na kod kreskowy z tyłu książki (zaczyna się od 978…)</small> <button type="button" id="scanstop">Zamknij aparat</button></div>
     <small id="isbnst" style="color:var(--mut)"></small>
     <label>Tytuł<input id="title" required></label>
     <label>Autor<input id="author"></label>
@@ -140,6 +141,30 @@ async function isbnLookup(){
   if(img)await coverFromUrl(img);
 }
 $('isbnbtn').onclick=isbnLookup;
+let stream=null,scanning=false,zxr=null;
+function stopScan(){scanning=false;if(zxr){try{zxr.reset()}catch(e){}zxr=null}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('vid').srcObject=null;$('scanbox').style.display='none'}
+function gotCode(v){const n=String(v).replace(/\D/g,'');if(n.length===13&&/^97[89]/.test(n)){stopScan();$('isbn').value=n;isbnLookup();return true}return false}
+function loadZX(){return new Promise((ok,no)=>{if(window.ZXing)return ok();const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)})}
+async function startScan(){
+  const st=$('isbnst');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){st.textContent='Ta przeglądarka nie obsługuje aparatu';return}
+  $('scanbox').style.display='block';st.textContent='Uruchamiam aparat…';scanning=true;
+  try{
+    if('BarcodeDetector' in window){
+      const det=new BarcodeDetector({formats:['ean_13']});
+      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+      const v=$('vid');v.srcObject=stream;await v.play();st.textContent='Szukam kodu…';
+      const loop=async()=>{if(!scanning)return;try{const c=await det.detect(v);for(const b of c)if(gotCode(b.rawValue))return}catch(e){}setTimeout(loop,250)};loop();
+    }else{
+      await loadZX();
+      zxr=new ZXing.BrowserMultiFormatReader();
+      st.textContent='Szukam kodu…';
+      zxr.decodeFromVideoDevice(null,'vid',res=>{if(res)gotCode(res.getText())});
+    }
+  }catch(e){stopScan();st.textContent='Brak dostępu do aparatu (zezwól w ustawieniach przeglądarki)'}
+}
+$('scanbtn').onclick=startScan;$('scanstop').onclick=()=>{stopScan();$('isbnst').textContent=''};
+$('dlg').addEventListener('close',stopScan);
 $('isbn').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();isbnLookup()}};
 $('f').onsubmit=()=>{
   const d={title:$('title').value.trim(),author:$('author').value.trim(),date:$('date').value,cover,updated:Date.now()};
