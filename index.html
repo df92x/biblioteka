@@ -163,19 +163,25 @@ async function startScan(){
   const st=$('isbnst');
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){st.textContent='Ta przeglądarka nie obsługuje aparatu';return}
   $('scanbox').style.display='block';st.textContent='Uruchamiam aparat…';scanning=true;
+  const vc={facingMode:'environment',width:{ideal:1920},height:{ideal:1080}};
   try{
-    if('BarcodeDetector' in window){
+    let native=false;
+    if('BarcodeDetector' in window){try{native=(await BarcodeDetector.getSupportedFormats()).includes('ean_13')}catch(e){}}
+    if(native){
       const det=new BarcodeDetector({formats:['ean_13']});
-      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-      const v=$('vid');v.srcObject=stream;await v.play();st.textContent='Szukam kodu…';
-      const loop=async()=>{if(!scanning)return;try{const c=await det.detect(v);for(const b of c)if(gotCode(b.rawValue))return}catch(e){}setTimeout(loop,250)};loop();
+      stream=await navigator.mediaDevices.getUserMedia({video:vc});
+      const v=$('vid');v.srcObject=stream;await v.play();
+      try{await stream.getVideoTracks()[0].applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
+      st.textContent='Szukam kodu… (trzymaj 15–25 cm od kodu, dobre światło)';
+      const loop=async()=>{if(!scanning)return;try{const c=await det.detect(v);for(const b of c)if(gotCode(b.rawValue))return}catch(e){}setTimeout(loop,200)};loop();
     }else{
-      await loadZX();
-      zxr=new ZXing.BrowserMultiFormatReader();
-      st.textContent='Szukam kodu…';
-      zxr.decodeFromVideoDevice(null,'vid',res=>{if(res)gotCode(res.getText())});
+      st.textContent='Ładuję czytnik…';await loadZX();if(!scanning)return;
+      const h=new Map();h.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13]);h.set(ZXing.DecodeHintType.TRY_HARDER,true);
+      zxr=new ZXing.BrowserMultiFormatReader(h,150);
+      st.textContent='Szukam kodu… (trzymaj 15–25 cm od kodu, dobre światło)';
+      zxr.decodeFromConstraints({video:vc},'vid',res=>{if(res)gotCode(res.getText())});
     }
-  }catch(e){stopScan();st.textContent='Brak dostępu do aparatu (zezwól w ustawieniach przeglądarki)'}
+  }catch(e){stopScan();st.textContent='Błąd aparatu: '+(e.name||e.message)+' — zezwól na aparat w ustawieniach przeglądarki'}
 }
 $('scanbtn').onclick=startScan;$('scanstop').onclick=()=>{stopScan();$('isbnst').textContent=''};
 $('dlg').addEventListener('close',stopScan);
