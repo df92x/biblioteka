@@ -72,7 +72,7 @@ label input{color:var(--tx)}
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const KEY='biblioteka.books';
-const WORKER='';// adres wlasnego Cloudflare Workera (patrz README), np. https://biblioteka.TWOJ.workers.dev/
+const WORKER='https://orange-rice-5fb6.flinta92.workers.dev/';// adres wlasnego Cloudflare Workera (patrz README), np. https://biblioteka.TWOJ.workers.dev/
 function tfetch(u,ms=6000){const c=new AbortController(),id=setTimeout(()=>c.abort(),ms);return fetch(u,{signal:c.signal}).finally(()=>clearTimeout(id))}
 async function pfetch(u){
   for(const p of [WORKER&&WORKER+'?url=','https://api.allorigins.win/raw?url=']){
