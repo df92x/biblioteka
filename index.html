@@ -54,6 +54,8 @@ label input{color:var(--tx)}
 <dialog id="dlg">
   <form id="f" method="dialog">
     <h2 id="dt" style="margin:0">Nowa książka</h2>
+    <label>ISBN (opcjonalnie)<span style="display:flex;gap:6px"><input id="isbn" inputmode="numeric" placeholder="np. 9788324631766" style="flex:1;min-width:0"><button type="button" id="isbnbtn">Szukaj</button></span></label>
+    <small id="isbnst" style="color:var(--mut)"></small>
     <label>Tytuł<input id="title" required></label>
     <label>Autor<input id="author"></label>
     <label>Data przeczytania<input id="date" type="date" required></label>
@@ -93,22 +95,52 @@ function open_(b){
   $('dt').textContent=b?'Edytuj książkę':'Nowa książka';
   $('title').value=b?b.title:'';$('author').value=b?b.author:'';
   $('date').value=b?b.date:new Date().toISOString().slice(0,10);
-  $('file').value='';showPrev();$('dlg').showModal();
+  $('file').value='';$('isbn').value='';$('isbnst').textContent='';showPrev();$('dlg').showModal();
 }
 function showPrev(){$('prev').style.display=cover?'block':'none';$('prev').src=cover}
 function edit(id){open_(live().find(b=>b.id===id))}
 function del(id){if(confirm('Usunąć tę książkę?')){books=books.map(b=>b.id===id?{id,deleted:true,updated:Date.now()}:b);save();render()}}
 
-$('file').onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  const img=new Image(),u=URL.createObjectURL(f);
+function setCoverFromSrc(src){return new Promise(res=>{
+  const img=new Image();
   img.onload=()=>{
-    const w=300,h=Math.round(w*1.5),c=document.createElement('canvas');c.width=w;c.height=h;
+    const w=300,h=450,c=document.createElement('canvas');c.width=w;c.height=h;
     const x=c.getContext('2d'),r=Math.max(w/img.width,h/img.height),sw=w/r,sh=h/r;
     x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,w,h);
-    cover=c.toDataURL('image/jpeg',.8);URL.revokeObjectURL(u);showPrev();
-  };img.src=u;
+    cover=c.toDataURL('image/jpeg',.8);showPrev();res(true)};
+  img.onerror=()=>res(false);img.src=src})}
+$('file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const u=URL.createObjectURL(f);setCoverFromSrc(u).then(()=>URL.revokeObjectURL(u));
 };
+async function coverFromUrl(url){
+  try{const b=await(await fetch(url)).blob();const u=URL.createObjectURL(b);const ok=await setCoverFromSrc(u);URL.revokeObjectURL(u);if(ok)return}catch(e){}
+  cover=url;showPrev();
+}
+async function isbnLookup(){
+  const n=$('isbn').value.replace(/[^0-9Xx]/g,'');const st=$('isbnst');
+  if(n.length!==10&&n.length!==13){st.textContent='ISBN ma 10 lub 13 cyfr';return}
+  st.textContent='Szukam…';
+  let t='',a='',img='',d='';
+  try{
+    const g=await(await fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+n)).json();
+    const v=g.items&&g.items[0]&&g.items[0].volumeInfo;
+    if(v){t=v.title+(v.subtitle?': '+v.subtitle:'');a=(v.authors||[]).join(', ');img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail)||'';img=img.replace('http://','https://').replace('&edge=curl','').replace('zoom=1','zoom=2')}
+  }catch(e){}
+  if(!t||!img){
+    try{
+      const o=await(await fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+n+'&format=json&jscmd=data')).json();
+      const v=o['ISBN:'+n];
+      if(v){t=t||v.title;a=a||(v.authors||[]).map(x=>x.name).join(', ');img=img||(v.cover&&(v.cover.large||v.cover.medium))||''}
+    }catch(e){}
+  }
+  if(!t){st.textContent='Nie znaleziono książki o tym ISBN';return}
+  $('title').value=t;$('author').value=a;
+  st.textContent=img?'Znaleziono ✓':'Znaleziono (bez okładki — dodaj zdjęcie)';
+  if(img)await coverFromUrl(img);
+}
+$('isbnbtn').onclick=isbnLookup;
+$('isbn').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();isbnLookup()}};
 $('f').onsubmit=()=>{
   const d={title:$('title').value.trim(),author:$('author').value.trim(),date:$('date').value,cover,updated:Date.now()};
   if(editId)books=books.map(b=>b.id===editId?{...b,...d}:b);
