@@ -72,7 +72,15 @@ label input{color:var(--tx)}
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const KEY='biblioteka.books';
-const PROXY='https://api.allorigins.win/raw?url=';
+const WORKER='';// adres wlasnego Cloudflare Workera (patrz README), np. https://biblioteka.TWOJ.workers.dev/
+function tfetch(u,ms=6000){const c=new AbortController(),id=setTimeout(()=>c.abort(),ms);return fetch(u,{signal:c.signal}).finally(()=>clearTimeout(id))}
+async function pfetch(u){
+  for(const p of [WORKER&&WORKER+'?url=','https://api.allorigins.win/raw?url=']){
+    if(!p)continue;
+    try{const x=await tfetch(p+encodeURIComponent(u));if(x.ok)return x}catch(e){}
+  }
+  throw new Error('proxy');
+}
 const GBKEY='';// opcjonalny klucz API Google Books (zwieksza limit zapytan)
 let books=[];try{books=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
 const live=()=>books.filter(b=>!b.deleted);
@@ -117,7 +125,7 @@ $('file').onchange=e=>{
   const u=URL.createObjectURL(f);setCoverFromSrc(u).then(()=>URL.revokeObjectURL(u));
 };
 async function coverFromUrl(url){
-  for(const x of [url,PROXY+encodeURIComponent(url)]){try{const b=await(await fetch(x)).blob();const u=URL.createObjectURL(b);const ok=await setCoverFromSrc(u);URL.revokeObjectURL(u);if(ok)return}catch(e){}}
+  for(const f of [()=>tfetch(url),()=>pfetch(url)]){try{const b=await(await f()).blob();const u=URL.createObjectURL(b);const ok=await setCoverFromSrc(u);URL.revokeObjectURL(u);if(ok)return}catch(e){}}
   cover=url;showPrev();
 }
 async function isbnLookup(){
@@ -127,7 +135,7 @@ async function isbnLookup(){
   let t='',a='',img='',d='';
   try{
     const u='https://www.poczytaj.pl/index.php?akcja=pokaz_ksiazki&szukaj='+n;
-    const h=await(await fetch(PROXY+encodeURIComponent(u))).text();
+    const h=await(await pfetch(u)).text();
     const d=new DOMParser().parseFromString(h,'text/html');
     const row=d.querySelector('.lista_poz');
     if(row&&h.includes('lista_okl')){
@@ -138,13 +146,13 @@ async function isbnLookup(){
     }
   }catch(e){}
   if(!t)try{
-    const g=await(await fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+n+(GBKEY?'&key='+GBKEY:''))).json();
+    const g=await(await tfetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+n+(GBKEY?'&key='+GBKEY:''))).json();
     const v=g.items&&g.items[0]&&g.items[0].volumeInfo;
     if(v){t=v.title+(v.subtitle?': '+v.subtitle:'');a=(v.authors||[]).join(', ');img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail)||'';img=img.replace('http://','https://').replace('&edge=curl','').replace('zoom=1','zoom=2')}
   }catch(e){}
   if(!t||!img){
     try{
-      const o=await(await fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+n+'&format=json&jscmd=data')).json();
+      const o=await(await tfetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+n+'&format=json&jscmd=data')).json();
       const v=o['ISBN:'+n];
       if(v){t=t||v.title;a=a||(v.authors||[]).map(x=>x.name).join(', ');img=img||(v.cover&&(v.cover.large||v.cover.medium))||''}
     }catch(e){}
@@ -152,7 +160,7 @@ async function isbnLookup(){
   if(!t){
     try{
       const u='https://data.bn.org.pl/api/institutions/bibs.json?limit=1&isbnIssn='+n;
-      const j=await(await fetch(PROXY+encodeURIComponent(u))).json();
+      const j=await(await pfetch(u)).json();
       const v=j.bibs&&j.bibs[0];
       if(v){
         t=v.title.split(' / ')[0].replace(/[\s:;.,\/]+$/,'');
@@ -161,7 +169,7 @@ async function isbnLookup(){
       }
     }catch(e){}
   }
-  if(!t){st.textContent='Nie znaleziono książki o tym ISBN';return}
+  if(!t){st.textContent='Nie znaleziono książki (lub serwery nie odpowiadają) — wpisz dane ręcznie';return}
   $('title').value=t;$('author').value=a;
   st.textContent=img?'Znaleziono ✓':'Znaleziono (bez okładki — dodaj zdjęcie)';
   if(img)await coverFromUrl(img);

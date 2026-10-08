@@ -12,3 +12,9 @@
 Hosting: wrzuć `index.html` na GitHub Pages / Cloudflare Pages.
 Test lokalny: `python -m http.server 8000` w tym folderze.
 Logowanie nie działa z `file://`.
+
+## Serwer pośredniczący (wyszukiwanie ISBN)
+Poczytaj.pl i Biblioteka Narodowa nie pozwalają na zapytania prosto z przeglądarki.
+1. dash.cloudflare.com → Workers & Pages → Create → Create Worker → nazwa `biblioteka` → Deploy.
+2. Edit code → wklej zawartość `worker.js` → Deploy.
+3. Skopiuj adres (np. `https://biblioteka.TWOJA-NAZWA.workers.dev`) i wpisz go w `index.html` w stałej `WORKER` (z `/` na końcu).
