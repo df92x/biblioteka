@@ -1,4 +1,4 @@
-# Moja biblioteka – konfiguracja synchronizacji z Google Drive
+# StoryKeep – konfiguracja synchronizacji z Google Drive
 
 1. https://console.cloud.google.com → nowy projekt.
 2. „APIs & Services” → Library → włącz **Google Drive API**.
