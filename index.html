@@ -53,16 +53,40 @@ label{display:grid;gap:4px;font-size:.9rem;color:var(--mut)}
 label input{color:var(--tx)}
 .prev{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;border:1px solid var(--bd);display:none}
 .row{display:flex;gap:8px;justify-content:flex-end}
+body.home #app,body.home #add{display:none}body:not(.home) #home{display:none}
+#fbar{display:none}body.m-cards #fbar{display:flex}#fbar select{flex:1;min-width:130px}
+#home{max-width:1000px;margin:0 auto;padding:8px 16px 40px;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+#home .hint{grid-column:1/-1;margin:0;color:var(--mut)}
+.bw{display:grid;gap:8px;align-content:start}
+.ban{display:flex;align-items:center;gap:18px;width:100%;min-height:150px;padding:24px;border:0;border-radius:16px;color:#fff;text-align:left;box-shadow:0 4px 14px #0003;transition:transform .15s}
+.ban:hover{transform:translateY(-2px)}.ban:active{transform:none}
+.ban.b1{background:linear-gradient(135deg,#8b4a2b,#d98c5f)}.ban.b2{background:linear-gradient(135deg,#1f5f73,#4aa3a0)}
+.ban svg{flex:0 0 auto;width:64px;height:64px}
+.ban b{display:block;font-size:1.5rem}.ban small{display:block;margin-top:4px;opacity:.9;font-size:.9rem}
+.dflt{display:flex;flex-direction:row;gap:8px;align-items:center;color:var(--mut);font-size:.9rem}
+#sbar{align-items:center}#sect{font-size:1.15rem}
+main.c{--w:220px}main.c.v-md{--w:150px}main.c.v-sm{--w:100px}
+main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
+.cprev{width:135px;aspect-ratio:3/2}
 </style>
 </head>
 <body>
 <header><div><h1 id="ttl" role="button" tabindex="0" title="Pokaż statystyki"><svg viewBox="100 170 824 690" width="40" height="34" aria-hidden="true" style="vertical-align:-5px;margin-right:6px"><path d="M512 250 C420 190 290 175 150 205 L150 790 C290 760 420 775 512 835 Z" fill="#fff8ec" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 C604 190 734 175 874 205 L874 790 C734 760 604 775 512 835 Z" fill="#f3e4cb" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 L512 835" stroke="#8b4a2b" stroke-width="44" stroke-linecap="round"/><g stroke="#c9a77c" stroke-width="26" stroke-linecap="round" fill="none"><path d="M235 330 C300 320 370 325 430 350"/><path d="M235 430 C300 420 370 425 430 450"/><path d="M235 530 C300 520 370 525 430 550"/><path d="M594 350 C654 325 724 320 789 330"/><path d="M594 450 C654 425 724 420 789 430"/></g><path d="M690 205 L690 430 L735 390 L780 430 L780 215 Z" fill="#d98c5f" stroke="#8b4a2b" stroke-width="22" stroke-linejoin="round"/></svg>StoryKeep <small class="chev">▾</small></h1><span class="count" id="count"></span></div><div class="hbtns"><button id="gbtn" class="gbtn" title="Zaloguj przez Google" aria-label="Zaloguj przez Google"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.2 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg></button><button id="add" class="addb" title="Dodaj książkę" aria-label="Dodaj książkę">+</button></div></header>
 <div class="bar"><span class="count" id="st"></span></div>
+<div id="home">
+  <p class="hint">Co dziś dodajesz do kolekcji?</p>
+  <div class="bw"><button class="ban b1" data-m="books"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M32 14C25 9 15 8 6 10v42c9-2 19-1 26 4zM32 14c7-5 17-6 26-4v42c-9-2-19-1-26 4z"/><path d="M32 14v42M13 22c4-1 9 0 13 2M13 31c4-1 9 0 13 2M38 24c4-2 9-3 13-2M38 33c4-2 9-3 13-2"/></svg><span><b>Książki</b><small id="hb1"></small></span></button><label class="dflt"><input type="checkbox" data-d="books"> Otwieraj domyślnie</label></div>
+  <div class="bw"><button class="ban b2" data-m="cards"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="5" y="12" width="54" height="40" rx="5"/><rect x="42" y="18" width="11" height="13" rx="1.5"/><path d="M12 22h20M12 31h20M12 40h40"/></svg><span><b>Pocztówki</b><small id="hb2"></small></span></button><label class="dflt"><input type="checkbox" data-d="cards"> Otwieraj domyślnie</label></div>
+</div>
+<div id="app">
+<div class="bar" id="sbar"><button id="homeb" type="button">← Menu</button><b id="sect"></b></div>
 <div class="bar">
   <input id="q" type="search" placeholder="Szukaj tytułu lub autora…">
   <button id="setb" title="Ustawienia widoku" aria-label="Ustawienia widoku" style="font-size:1.2rem;line-height:1">⚙</button>
 </div>
+<div class="bar" id="fbar"><select id="fc" aria-label="Kraj"></select><select id="fci" aria-label="Miasto"></select></div>
 <main id="list"></main>
+</div>
 
 <dialog id="dlg">
   <form id="f" method="dialog">
@@ -77,6 +101,23 @@ label input{color:var(--tx)}
     <img id="prev" class="prev" alt="">
     <div class="row">
       <button type="button" id="cancel">Anuluj</button>
+      <button class="pri" type="submit">Zapisz</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="cdlg">
+  <form id="cf" method="dialog">
+    <h2 id="cdt" style="margin:0">Nowa pocztówka</h2>
+    <label>Kraj<input id="ccountry" list="dlc" required autocomplete="off"></label>
+    <label>Miasto<input id="ccity" list="dlci" required autocomplete="off"></label>
+    <datalist id="dlc"></datalist><datalist id="dlci"></datalist>
+    <label>Data (opcjonalnie)<input id="cdate" type="date"></label>
+    <label>Notatka (opcjonalnie)<input id="cnote"></label>
+    <label>Zdjęcie pocztówki<input id="cfile" type="file" accept="image/*"></label>
+    <img id="cprev" class="prev cprev" alt="">
+    <div class="row">
+      <button type="button" id="ccancel">Anuluj</button>
       <button class="pri" type="submit">Zapisz</button>
     </div>
   </form>
@@ -98,47 +139,89 @@ async function pfetch(u){
 }
 const GBKEY='';// opcjonalny klucz API Google Books (zwieksza limit zapytan)
 let books=[];try{books=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
-let view_={sort:'date-desc',size:'lg'};try{Object.assign(view_,JSON.parse(localStorage.getItem('biblioteka.view')))}catch(e){}
+let view_={sort:'date-desc',csort:'date-desc',size:'lg'};try{Object.assign(view_,JSON.parse(localStorage.getItem('biblioteka.view')))}catch(e){}
 const live=()=>books.filter(b=>!b.deleted);
-let editId=null,cover='';
+let editId=null,cover='',coverDims=[300,450];
+const CKEY='biblioteka.cards',DKEY='biblioteka.def';
+let cards=[];try{cards=JSON.parse(localStorage.getItem(CKEY))||[]}catch(e){}
+let mode=null;const livec=()=>cards.filter(c=>!c.deleted);
 const $=id=>document.getElementById(id);
-const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(books))}catch(e){alert('Brak miejsca w pamięci przeglądarki — usuń część okładek.')}};
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(books));localStorage.setItem(CKEY,JSON.stringify(cards))}catch(e){alert('Brak miejsca w pamięci przeglądarki — usuń część zdjęć.')}};
 let t;const save=()=>{saveLocal();clearTimeout(t);t=setTimeout(sync,1500)};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-function render(){
+const plc=(a,b)=>a.localeCompare(b,'pl');
+function stats(){
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const all=live(),now=new Date(),today=iso(now),wk=iso(new Date(now.getFullYear(),now.getMonth(),now.getDate()-6)),mo=today.slice(0,7),yr=today.slice(0,4);
+  const lc=livec(),co=new Set(lc.map(c=>c.country.toLowerCase())),ci=new Set(lc.map(c=>(c.country+'|'+c.city).toLowerCase()));
+  const bs=`<b>Przeczytane: ${all.length}</b><br>Ostatnie 7 dni: ${all.filter(b=>b.date>=wk&&b.date<=today).length}<br>W tym miesiącu: ${all.filter(b=>b.date.startsWith(mo)).length}<br>W tym roku: ${all.filter(b=>b.date.startsWith(yr)).length}`;
+  const cs=`<b>Pocztówki: ${lc.length}</b><br>Kraje: ${co.size}<br>Miasta: ${ci.size}`;
+  $('count').innerHTML=mode==='books'?bs:mode==='cards'?cs:bs+'<br><br>'+cs;
+  $('hb1').textContent=all.length+' '+(all.length===1?'przeczytana':'przeczytanych');
+  $('hb2').textContent=lc.length+' pocztówek · '+co.size+' krajów';
+}
+function render(){stats();if(mode==='cards')renderCards();else if(mode==='books')renderBooks()}
+function renderBooks(){
   const q=$('q').value.toLowerCase(),s=view_.sort;$('list').className='v-'+view_.size;
   let l=live().filter(b=>(b.title+' '+b.author).toLowerCase().includes(q));
-  l.sort((a,b)=>s==='title'?a.title.localeCompare(b.title,'pl'):s==='title-desc'?b.title.localeCompare(a.title,'pl'):s==='date-asc'?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
-  const all=live(),now=new Date(),iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  const today=iso(now),wk=iso(new Date(now.getFullYear(),now.getMonth(),now.getDate()-6)),mo=today.slice(0,7),yr=today.slice(0,4);
-  $('count').innerHTML=`<b>Przeczytane: ${all.length}</b><br>Ostatnie 7 dni: ${all.filter(b=>b.date>=wk&&b.date<=today).length}<br>W tym miesiącu: ${all.filter(b=>b.date.startsWith(mo)).length}<br>W tym roku: ${all.filter(b=>b.date.startsWith(yr)).length}`;
+  l.sort((a,b)=>s==='title'?plc(a.title,b.title):s==='title-desc'?plc(b.title,a.title):s==='date-asc'?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
   $('list').innerHTML=l.length?l.map(b=>`<div class="book">
     <div class="cover">${b.cover?`<img src="${b.cover}" alt="">`:'📖'}</div>
     <div class="info"><b>${esc(b.title)}</b>${b.author?`<small>${esc(b.author)}</small>`:''}<small>${new Date(b.date).toLocaleDateString('pl-PL')}</small></div>
     <div class="acts"><button onclick="edit('${b.id}')">Edytuj</button><button onclick="del('${b.id}')">Usuń</button></div>
   </div>`).join(''):'<div class="empty">Brak książek. Dodaj pierwszą!</div>';
 }
+function fillSel(el,all,vals,cur){
+  const v=vals.includes(cur)?cur:'';
+  el.innerHTML='<option value="">'+all+'</option>'+vals.map(x=>`<option value="${esc(x)}"${x===v?' selected':''}>${esc(x)}</option>`).join('');
+  return v;
+}
+function renderCards(){
+  const q=$('q').value.toLowerCase(),s=view_.csort,all=livec();
+  const fc=fillSel($('fc'),'Wszystkie kraje',[...new Set(all.map(c=>c.country))].sort(plc),$('fc').value);
+  const fci=fillSel($('fci'),'Wszystkie miasta',[...new Set(all.filter(c=>!fc||c.country===fc).map(c=>c.city))].sort(plc),$('fci').value);
+  $('list').className='c v-'+view_.size;
+  const cmp=(a,b)=>plc(a.country,b.country)||plc(a.city,b.city);
+  let l=all.filter(c=>(!fc||c.country===fc)&&(!fci||c.city===fci)&&(c.country+' '+c.city+' '+(c.note||'')).toLowerCase().includes(q));
+  l.sort((a,b)=>s==='country'?cmp(a,b):s==='country-desc'?cmp(b,a):s==='date-asc'?(a.date||'').localeCompare(b.date||'')||cmp(a,b):(b.date||'').localeCompare(a.date||'')||cmp(a,b));
+  $('list').innerHTML=l.length?l.map(c=>`<div class="book">
+    <div class="cover">${c.cover?`<img src="${c.cover}" alt="">`:'✉️'}</div>
+    <div class="info"><b>${esc(c.city)}</b><small>${esc(c.country)}</small>${c.date?`<small>${new Date(c.date).toLocaleDateString('pl-PL')}</small>`:''}${c.note?`<small>${esc(c.note)}</small>`:''}</div>
+    <div class="acts"><button onclick="editC('${c.id}')">Edytuj</button><button onclick="delC('${c.id}')">Usuń</button></div>
+  </div>`).join(''):'<div class="empty">'+(all.length?'Brak pocztówek dla tego filtra.':'Brak pocztówek. Dodaj pierwszą!')+'</div>';
+}
+function setMode(m){
+  mode=m;document.body.classList.toggle('home',!m);document.body.classList.toggle('m-cards',m==='cards');
+  if(m){$('sect').textContent=m==='cards'?'Pocztówki':'Książki';$('q').placeholder=m==='cards'?'Szukaj kraju, miasta lub notatki…':'Szukaj tytułu lub autora…';
+    $('add').title=m==='cards'?'Dodaj pocztówkę':'Dodaj książkę';$('add').setAttribute('aria-label',$('add').title);$('q').value=''}
+  syncDef();render();
+}
+function syncDef(){const d=localStorage.getItem(DKEY)||'';document.querySelectorAll('#home [data-d]').forEach(c=>c.checked=c.dataset.d===d)}
+function setDef(d){try{d?localStorage.setItem(DKEY,d):localStorage.removeItem(DKEY)}catch(e){}syncDef()}
+$('home').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b)setMode(b.dataset.m)});
+$('home').addEventListener('change',e=>{const d=e.target.dataset&&e.target.dataset.d;if(d)setDef(e.target.checked?d:'')});
+$('homeb').onclick=()=>setMode(null);
 function open_(b){
-  editId=b?b.id:null;cover=b?b.cover:'';
+  editId=b?b.id:null;cover=b?b.cover:'';coverDims=[300,450];
   $('dt').textContent=b?'Edytuj książkę':'Nowa książka';
   $('title').value=b?b.title:'';$('author').value=b?b.author:'';
   $('date').value=b?b.date:new Date().toISOString().slice(0,10);
   $('file').value='';$('isbn').value='';$('isbnst').textContent='';showPrev();$('dlg').showModal();
 }
-function showPrev(){$('prev').style.display=cover?'block':'none';$('prev').src=cover}
+function showPrev(){for(const id of ['prev','cprev']){$(id).style.display=cover?'block':'none';$(id).src=cover}}
 function edit(id){open_(live().find(b=>b.id===id))}
 function del(id){if(confirm('Usunąć tę książkę?')){books=books.map(b=>b.id===id?{id,deleted:true,updated:Date.now()}:b);save();render()}}
 
 function setCoverFromSrc(src){return new Promise(res=>{
   const img=new Image();
   img.onload=()=>{
-    const w=300,h=450,c=document.createElement('canvas');c.width=w;c.height=h;
+    const w=coverDims[0],h=coverDims[1],c=document.createElement('canvas');c.width=w;c.height=h;
     const x=c.getContext('2d'),r=Math.max(w/img.width,h/img.height),sw=w/r,sh=h/r;
     x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,w,h);
     cover=c.toDataURL('image/jpeg',.8);showPrev();res(true)};
   img.onerror=()=>res(false);img.src=src})}
-$('file').onchange=e=>{
+for(const id of ['file','cfile'])$(id).onchange=e=>{
   const f=e.target.files[0];if(!f)return;
   const u=URL.createObjectURL(f);setCoverFromSrc(u).then(()=>URL.revokeObjectURL(u));
 };
@@ -231,14 +314,39 @@ $('f').onsubmit=()=>{
   else books.push({id:Date.now().toString(36),...d});
   save();render();
 };
-$('add').onclick=()=>open_();
+$('add').onclick=()=>mode==='cards'?openC():open_();
+const canon=(v,list)=>{v=v.trim();return list.find(x=>x.toLowerCase()===v.toLowerCase())||v};
+function cityList(){const c=canon($('ccountry').value,livec().map(x=>x.country)).toLowerCase();const l=livec();const m=l.filter(x=>x.country.toLowerCase()===c);return [...new Set((m.length?m:l).map(x=>x.city))].sort(plc)}
+function fillDl(){
+  $('dlc').innerHTML=[...new Set(livec().map(x=>x.country))].sort(plc).map(x=>`<option value="${esc(x)}">`).join('');
+  $('dlci').innerHTML=cityList().map(x=>`<option value="${esc(x)}">`).join('');
+}
+function openC(c){
+  editId=c?c.id:null;cover=c?c.cover:'';coverDims=[450,300];
+  $('cdt').textContent=c?'Edytuj pocztówkę':'Nowa pocztówka';
+  $('ccountry').value=c?c.country:($('fc').value||'');$('ccity').value=c?c.city:($('fci').value||'');
+  $('cdate').value=c?c.date||'':'';$('cnote').value=c?c.note||'':'';
+  $('cfile').value='';showPrev();fillDl();$('cdlg').showModal();
+}
+const editC=id=>openC(livec().find(c=>c.id===id));
+function delC(id){if(confirm('Usunąć tę pocztówkę?')){cards=cards.map(c=>c.id===id?{id,deleted:true,updated:Date.now()}:c);save();render()}}
+$('ccountry').oninput=fillDl;
+$('cf').onsubmit=()=>{
+  const country=canon($('ccountry').value,livec().map(x=>x.country));
+  const city=canon($('ccity').value,livec().filter(x=>x.country.toLowerCase()===country.toLowerCase()).map(x=>x.city));
+  const d={country,city,date:$('cdate').value,note:$('cnote').value.trim(),cover,updated:Date.now()};
+  if(editId)cards=cards.map(c=>c.id===editId?{...c,...d}:c);
+  else cards.push({id:Date.now().toString(36),...d});
+  save();render();
+};
+$('ccancel').onclick=()=>$('cdlg').close();
 $('cancel').onclick=()=>$('dlg').close();
 const tg=()=>$('count').classList.toggle('open');
 $('ttl').onclick=tg;$('ttl').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}};
-$('q').oninput=render;
+$('q').oninput=render;$('fc').onchange=()=>{$('fci').value='';render()};$('fci').onchange=render;
 $('setb').onclick=()=>{
-  const opt=(n,v,t)=>`<label><input type="radio" name="${n}" value="${v}" ${view_[n]===v?'checked':''}> ${t}</label>`;
-  $('sbody').innerHTML='<h3>Sortowanie</h3>'+opt('sort','date-desc','Od najnowszej')+opt('sort','date-asc','Od najstarszej')+opt('sort','title','Tytuł A–Z')+opt('sort','title-desc','Tytuł Z–A')
+  const cc=mode==='cards',opt=(n,v,t)=>`<label><input type="radio" name="${n}" value="${v}" ${view_[n]===v?'checked':''}> ${t}</label>`;
+  $('sbody').innerHTML='<h3>Sortowanie</h3>'+(cc?opt('csort','date-desc','Od najnowszej')+opt('csort','date-asc','Od najstarszej')+opt('csort','country','Kraj, miasto A–Z')+opt('csort','country-desc','Kraj, miasto Z–A'):opt('sort','date-desc','Od najnowszej')+opt('sort','date-asc','Od najstarszej')+opt('sort','title','Tytuł A–Z')+opt('sort','title-desc','Tytuł Z–A'))
     +'<h3>Widok</h3>'+opt('size','lg','Duże miniaturki')+opt('size','md','Mniejsze miniaturki')+opt('size','sm','Małe miniaturki')+opt('size','list','Lista bez miniaturek');
   $('sdlg').showModal();
 };
@@ -246,12 +354,13 @@ $('sdlg').addEventListener('change',e=>{if(e.target.name){view_[e.target.name]=e
 $('sdlg').addEventListener('click',e=>{if(e.target===$('sdlg')||e.target.id==='sclose')$('sdlg').close()});
 
 // ---- Synchronizacja z Google Drive (appDataFolder) ----
-const FN='biblioteka.json',SCOPE='https://www.googleapis.com/auth/drive.appdata';
-let tok=null,tokExp=0,client=null,fileId=null;
+const SCOPE='https://www.googleapis.com/auth/drive.appdata';
+let tok=null,tokExp=0,client=null;
+const DS=[{fn:'biblioteka.json',get:()=>books,set:a=>books=a},{fn:'postcards.json',get:()=>cards,set:a=>cards=a}];
 const setG=t=>{const b=$('gbtn');b.title=t;b.setAttribute('aria-label',t);b.classList.toggle('on',t.includes('Zsynchronizuj'))};
 const setSt=m=>$('st').textContent=m;
 const cid=()=>'566153575236-ehvimnjfblq87227v4qqte2enh3hqvpt.apps.googleusercontent.com';
-function merge(a){const m=new Map();[...books,...a].forEach(b=>{const o=m.get(b.id);if(!o||(b.updated||0)>(o.updated||0))m.set(b.id,b)});books=[...m.values()]}
+function merge(cur,a){const m=new Map();[...cur,...(Array.isArray(a)?a:[])].forEach(b=>{const o=m.get(b.id);if(!o||(b.updated||0)>(o.updated||0))m.set(b.id,b)});return [...m.values()]}
 const isNative=()=>!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
 const getSL=()=>{const C=window.Capacitor;return (C.Plugins&&C.Plugins.SocialLogin)||(C.registerPlugin&&C.registerPlugin('SocialLogin'))};
 async function nativeLogin(sw){
@@ -280,14 +389,14 @@ function login(sw){
 async function afterLogin(){
   if(!isNative())await fetchEmail();
   const em=localStorage.getItem('biblioteka.email'),owner=localStorage.getItem('biblioteka.owner');
-  if(em&&owner&&owner!==em){books=[];saveLocal();render()}
+  if(em&&owner&&owner!==em){books=[];cards=[];saveLocal();render()}
   if(em)localStorage.setItem('biblioteka.owner',em);
   sync();
 }
 async function fetchEmail(){try{const u=await(await api('https://www.googleapis.com/oauth2/v3/userinfo')).json();if(u.email)localStorage.setItem('biblioteka.email',u.email)}catch(e){}}
 async function switchAccount(){
   if(tok&&Date.now()<tokExp){try{await sync()}catch(e){}}
-  books=[];saveLocal();render();
+  books=[];cards=[];saveLocal();render();
   ['biblioteka.email','biblioteka.owner'].forEach(k=>localStorage.removeItem(k));
   tok=null;tokExp=0;login(true);
 }
@@ -298,11 +407,14 @@ async function logout(){
 }
 function openPanel(){
   const inn=!!tok||!!localStorage.getItem('biblioteka.on'),em=localStorage.getItem('biblioteka.email');
-  $('gbody').innerHTML=inn
+  const df=localStorage.getItem(DKEY)||'',dr=(v,t)=>`<label><input type="radio" name="def" value="${v}" ${df===v?'checked':''}> ${t}</label>`;
+  const defs='<h3>Po otwarciu aplikacji</h3>'+dr('','Pytaj (menu główne)')+dr('books','Książki')+dr('cards','Pocztówki');
+  $('gbody').innerHTML=defs+(inn
    ?`<p>Zalogowano jako<br><b>${esc(em||'konto Google')}</b></p><p class="count">${esc($('st').textContent||'')}</p><button data-a="sync" class="pri">Synchronizuj teraz</button><button data-a="switch">Przełącz konto</button><button data-a="out">Wyloguj</button>`
-   :`<p>Zaloguj się, aby synchronizować listę między urządzeniami.</p><button data-a="in" class="pri">Zaloguj przez Google</button>`;
+   :`<p>Zaloguj się, aby synchronizować listę między urządzeniami.</p><button data-a="in" class="pri">Zaloguj przez Google</button>`);
   $('gdlg').showModal();
 }
+$('gdlg').addEventListener('change',e=>{if(e.target.name==='def')setDef(e.target.value)});
 $('gdlg').addEventListener('click',e=>{
   const a=e.target.dataset&&e.target.dataset.a;if(e.target===$('gdlg')||e.target.id==='gclose'){$('gdlg').close();return}
   if(!a)return;$('gdlg').close();
@@ -312,20 +424,23 @@ $('gdlg').addEventListener('click',e=>{
   else if(a==='out')logout();
 });
 async function api(url,o={}){const r=await fetch(url,{...o,headers:{Authorization:'Bearer '+tok,...(o.headers||{})}});if(!r.ok)throw new Error(r.status);return r}
+async function syncOne(d){
+  const q=encodeURIComponent("name='"+d.fn+"'");
+  const l=await(await api('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id)&q='+q)).json();
+  const fileId=l.files[0]&&l.files[0].id;
+  if(fileId){const rem=await(await api('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media')).json();d.set(merge(d.get(),rem))}
+  saveLocal();render();
+  const body=JSON.stringify(d.get());
+  if(fileId)await api('https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body});
+  else{const bd='b'+Date.now();
+    await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+bd},
+    body:['--'+bd,'Content-Type: application/json','',JSON.stringify({name:d.fn,parents:['appDataFolder']}),'--'+bd,'Content-Type: application/json','',body,'--'+bd+'--',''].join(String.fromCharCode(13,10))})}
+}
 async function sync(){
   if(!tok||Date.now()>tokExp){if(isNative()&&localStorage.getItem('biblioteka.on')){tok=null;nativeLogin();return}if(localStorage.getItem('biblioteka.on')){setSt('Sesja wygasła — kliknij „Zaloguj”');setG('☁ Zaloguj przez Google')}return}
   try{
     setSt('Synchronizuję…');
-    const q=encodeURIComponent("name='"+FN+"'");
-    const l=await(await api('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id)&q='+q)).json();
-    fileId=l.files[0]&&l.files[0].id;
-    if(fileId){const rem=await(await api('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media')).json();merge(rem)}
-    saveLocal();render();
-    const body=JSON.stringify(books);
-    if(fileId)await api('https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body});
-    else{const bd='b'+Date.now();
-      await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+bd},
-      body:['--'+bd,'Content-Type: application/json','',JSON.stringify({name:FN,parents:['appDataFolder']}),'--'+bd,'Content-Type: application/json','',body,'--'+bd+'--',''].join(String.fromCharCode(13,10))})}
+    for(const d of DS)await syncOne(d);
     setSt('Zsynchronizowano '+new Date().toLocaleTimeString('pl-PL'));
   }catch(e){setSt('Błąd synchronizacji ('+e.message+')')}
 }
@@ -337,7 +452,7 @@ if(localStorage.getItem('biblioteka.on')){
   else{setG('☁ Zaloguj ponownie');setSt('Kliknij gdziekolwiek, aby wznowić synchronizację');
     document.addEventListener('pointerdown',e=>{if(!tok&&!e.target.closest('#gbtn'))login()},{once:true})}
 }}
-render();
+setMode(localStorage.getItem(DKEY)||null);
 </script>
 </body>
 </html>
