@@ -27,8 +27,17 @@ h1{margin:0;font-size:1.6rem}
 .count{color:var(--mut);font-size:.9rem}
 #count{display:none;line-height:1.5;margin-top:2px;font-size:.85rem}#count b{color:var(--tx)}
 #count.open{display:block}h1{cursor:pointer;user-select:none}.chev{font-size:.6em;color:var(--mut)}
-.hbtns{display:flex;align-items:center;gap:14px}
-.addb{width:52px;height:52px;border-radius:50%;padding:0;background:#f08a24;color:#fff;border-color:#f08a24;font-size:2.2rem;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #0004}
+.hbtns{display:flex;align-items:center;gap:10px}
+.addb{width:52px;height:52px;border-radius:50%;padding:0;background:linear-gradient(135deg,#f5a03c,#e8741a);color:#fff;border:0;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px #0004;animation:ring 3.2s ease-out infinite;transition:transform .15s}
+.addb svg{width:26px;height:26px;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.addb:hover svg{transform:rotate(90deg) scale(1.1)}.addb:active{transform:scale(.88)}.addb:active svg{transform:rotate(180deg)}
+@keyframes ring{0%{box-shadow:0 3px 10px #0004,0 0 0 0 #f08a2480}60%,100%{box-shadow:0 3px 10px #0004,0 0 0 14px #f08a2400}}
+.seg{display:flex;gap:2px;padding:3px;border:1px solid var(--bd);border-radius:24px;background:var(--card)}
+.seg button{width:40px;height:36px;padding:0;border:0;border-radius:20px;background:none;color:var(--mut);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+.seg button svg{width:22px;height:22px}
+.seg button.on{background:var(--ac);color:var(--acx)}.seg button.on svg{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.6) rotate(-12deg)}60%{transform:scale(1.2) rotate(4deg)}100%{transform:none}}
+@media(prefers-reduced-motion:reduce){.addb,.seg button.on svg{animation:none}.addb svg{transition:none}}
 .gbtn{width:44px;height:44px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center}
 .gbtn.on{box-shadow:0 0 0 2px #34A853}
 .gp{display:grid;gap:10px}.gp p{margin:0}.gp button{width:100%}
@@ -80,10 +89,14 @@ body.home #app,body.home #add{display:none}body:not(.home) #home{display:none}
 main.c{--w:220px}main.c.v-md{--w:150px}main.c.v-sm{--w:100px}
 main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
 .cprev{width:135px;aspect-ratio:3/2}
+.cl{position:relative}
+.sug{position:absolute;left:0;right:0;top:100%;z-index:5;margin-top:2px;max-height:230px;overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 16px #0005}
+.sug div{padding:9px 10px;cursor:pointer;color:var(--tx)}.sug div.on,.sug div:hover{background:var(--bd)}
+.sug small{color:var(--mut)}.sug .src{font-size:.7rem;color:var(--mut);cursor:default;text-align:right;padding:4px 10px}.sug .src:hover{background:none}
 </style>
 </head>
 <body>
-<header><div><h1 id="ttl" role="button" tabindex="0" title="Pokaż statystyki"><svg viewBox="100 170 824 690" width="40" height="34" aria-hidden="true" style="vertical-align:-5px;margin-right:6px"><path d="M512 250 C420 190 290 175 150 205 L150 790 C290 760 420 775 512 835 Z" fill="#fff8ec" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 C604 190 734 175 874 205 L874 790 C734 760 604 775 512 835 Z" fill="#f3e4cb" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 L512 835" stroke="#8b4a2b" stroke-width="44" stroke-linecap="round"/><g stroke="#c9a77c" stroke-width="26" stroke-linecap="round" fill="none"><path d="M235 330 C300 320 370 325 430 350"/><path d="M235 430 C300 420 370 425 430 450"/><path d="M235 530 C300 520 370 525 430 550"/><path d="M594 350 C654 325 724 320 789 330"/><path d="M594 450 C654 425 724 420 789 430"/></g><path d="M690 205 L690 430 L735 390 L780 430 L780 215 Z" fill="#d98c5f" stroke="#8b4a2b" stroke-width="22" stroke-linejoin="round"/></svg>StoryKeep <small class="chev">▾</small></h1><span class="count" id="count"></span></div><div class="hbtns"><button id="gbtn" class="gbtn" title="Zaloguj przez Google" aria-label="Zaloguj przez Google"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.2 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg></button><button id="add" class="addb" title="Dodaj książkę" aria-label="Dodaj książkę">+</button></div></header>
+<header><div><h1 id="ttl" role="button" tabindex="0" title="Pokaż statystyki"><svg viewBox="100 170 824 690" width="40" height="34" aria-hidden="true" style="vertical-align:-5px;margin-right:6px"><path d="M512 250 C420 190 290 175 150 205 L150 790 C290 760 420 775 512 835 Z" fill="#fff8ec" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 C604 190 734 175 874 205 L874 790 C734 760 604 775 512 835 Z" fill="#f3e4cb" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 L512 835" stroke="#8b4a2b" stroke-width="44" stroke-linecap="round"/><g stroke="#c9a77c" stroke-width="26" stroke-linecap="round" fill="none"><path d="M235 330 C300 320 370 325 430 350"/><path d="M235 430 C300 420 370 425 430 450"/><path d="M235 530 C300 520 370 525 430 550"/><path d="M594 350 C654 325 724 320 789 330"/><path d="M594 450 C654 425 724 420 789 430"/></g><path d="M690 205 L690 430 L735 390 L780 430 L780 215 Z" fill="#d98c5f" stroke="#8b4a2b" stroke-width="22" stroke-linejoin="round"/></svg>StoryKeep <small class="chev">▾</small></h1><span class="count" id="count"></span></div><div class="hbtns"><div class="seg" id="seg" role="group" aria-label="Sekcja"><button type="button" data-m="books" title="Książki" aria-label="Książki"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M32 14C25 9 15 8 6 10v42c9-2 19-1 26 4zM32 14c7-5 17-6 26-4v42c-9-2-19-1-26 4z"/><path d="M32 14v42"/></svg></button><button type="button" data-m="cards" title="Pocztówki" aria-label="Pocztówki"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="5" y="12" width="54" height="40" rx="5"/><rect x="42" y="19" width="11" height="13" rx="1.5"/><path d="M12 24h20M12 34h20M12 43h40"/></svg></button></div><button id="gbtn" class="gbtn" title="Zaloguj przez Google" aria-label="Zaloguj przez Google"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.2 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg></button><button id="add" class="addb" title="Dodaj książkę" aria-label="Dodaj książkę"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div></header>
 <div class="bar"><span class="count" id="st"></span></div>
 <div id="home">
   <p class="hint">Co dziś dodajesz do kolekcji?</p>
@@ -121,9 +134,8 @@ main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
 <dialog id="cdlg">
   <form id="cf" method="dialog">
     <h2 id="cdt" style="margin:0">Nowa pocztówka</h2>
-    <label>Kraj<input id="ccountry" list="dlc" required autocomplete="off"></label>
-    <label>Miasto<input id="ccity" list="dlci" required autocomplete="off"></label>
-    <datalist id="dlc"></datalist><datalist id="dlci"></datalist>
+    <label class="cl">Kraj<input id="ccountry" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sugc"><div id="sugc" class="sug" role="listbox" hidden></div></label>
+    <label class="cl">Miasto<input id="ccity" required autofocus autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sug"><div id="sug" class="sug" role="listbox" hidden></div></label>
     <label>Data (opcjonalnie)<input id="cdate" type="date"></label>
     <label>Notatka (opcjonalnie)<input id="cnote"></label>
     <label>Zdjęcie pocztówki<input id="cfile" type="file" accept="image/*"></label>
@@ -154,7 +166,7 @@ let books=[];try{books=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
 let view_={sort:'date-desc',csort:'date-desc',size:'lg'};try{Object.assign(view_,JSON.parse(localStorage.getItem('biblioteka.view')))}catch(e){}
 const live=()=>books.filter(b=>!b.deleted);
 let editId=null,cover='',coverDims=[300,450];
-const CKEY='biblioteka.cards',DKEY='biblioteka.def';
+const CKEY='biblioteka.cards',LKEY='biblioteka.last',DKEY='biblioteka.def';
 let cards=[];try{cards=JSON.parse(localStorage.getItem(CKEY))||[]}catch(e){}
 let mode=null;const livec=()=>cards.filter(c=>!c.deleted);
 const $=id=>document.getElementById(id);
@@ -215,6 +227,7 @@ function setMode(m){
   mode=m;document.body.classList.toggle('home',!m);document.body.classList.toggle('m-cards',m==='cards');
   if(m){$('sect').textContent=m==='cards'?'Pocztówki':'Książki';$('q').placeholder=m==='cards'?'Szukaj kraju, miasta lub notatki…':'Szukaj tytułu lub autora…';
     $('add').title=m==='cards'?'Dodaj pocztówkę':'Dodaj książkę';$('add').setAttribute('aria-label',$('add').title);$('q').value=''}
+  document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   syncDef();render();
 }
 function syncDef(){const d=localStorage.getItem(DKEY)||'';document.querySelectorAll('#home [data-d]').forEach(c=>c.checked=c.dataset.d===d)}
@@ -222,6 +235,7 @@ function setDef(d){try{d?localStorage.setItem(DKEY,d):localStorage.removeItem(DK
 $('home').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b)setMode(b.dataset.m)});
 $('home').addEventListener('change',e=>{const d=e.target.dataset&&e.target.dataset.d;if(d)setDef(e.target.checked?d:'')});
 $('homeb').onclick=()=>setMode(null);
+$('seg').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b&&b.dataset.m!==mode)setMode(b.dataset.m)});
 function open_(b){
   editId=b?b.id:null;cover=b?b.cover:'';coverDims=[300,450];
   $('dt').textContent=b?'Edytuj książkę':'Nowa książka';
@@ -336,27 +350,95 @@ $('f').onsubmit=()=>{
 };
 $('add').onclick=()=>mode==='cards'?openC():open_();
 const canon=(v,list)=>{v=v.trim();return list.find(x=>x.toLowerCase()===v.toLowerCase())||v};
-function cityList(){const c=canon($('ccountry').value,livec().map(x=>x.country)).toLowerCase();const l=livec();const m=l.filter(x=>x.country.toLowerCase()===c);return [...new Set((m.length?m:l).map(x=>x.city))].sort(plc)}
-function fillDl(){
-  $('dlc').innerHTML=[...new Set(livec().map(x=>x.country))].sort(plc).map(x=>`<option value="${esc(x)}">`).join('');
-  $('dlci').innerHTML=cityList().map(x=>`<option value="${esc(x)}">`).join('');
+const POP=('Polska:Warszawa,Kraków,Łódź,Wrocław,Poznań,Gdańsk,Szczecin,Lublin,Katowice,Białystok,Gdynia,Sopot,Toruń,Zakopane,Kołobrzeg,Sandomierz,Zamość,Kazimierz Dolny,Malbork,Częstochowa,Rzeszów,Olsztyn,Opole,Kielce,Bydgoszcz,Gniezno,Łeba,Hel,Karpacz,Świnoujście|Włochy:Rzym,Wenecja,Florencja,Mediolan,Neapol,Piza,Werona,Turyn,Bolonia,Genua,Palermo,Sorrento,Asyż,Siena,Padwa|Hiszpania:Madryt,Barcelona,Sewilla,Walencja,Grenada,Malaga,Toledo,Bilbao,Palma de Mallorca,Kordoba|Francja:Paryż,Nicea,Lyon,Marsylia,Strasburg,Cannes,Awinion,Bordeaux,Tuluza|Niemcy:Berlin,Monachium,Hamburg,Drezno,Kolonia,Frankfurt nad Menem,Norymberga,Lipsk,Stuttgart,Brema|Wielka Brytania:Londyn,Edynburg,Manchester,Liverpool,Oksford,Cambridge,Bath,Glasgow|Austria:Wiedeń,Salzburg,Innsbruck,Graz|Czechy:Praga,Brno,Karlowe Wary,Czeski Krumlow|Słowacja:Bratysława,Koszyce|Węgry:Budapeszt|Portugalia:Lizbona,Porto|Grecja:Ateny,Saloniki,Heraklion|Chorwacja:Zagrzeb,Dubrownik,Split|Holandia:Amsterdam,Rotterdam,Haga|Belgia:Bruksela,Brugia,Antwerpia|Szwajcaria:Zurych,Genewa,Berno,Lucerna|Dania:Kopenhaga|Szwecja:Sztokholm|Norwegia:Oslo,Bergen|Finlandia:Helsinki|Irlandia:Dublin|Ukraina:Kijów,Lwów|Litwa:Wilno|Łotwa:Ryga|Estonia:Tallin|Turcja:Stambuł,Ankara|Egipt:Kair|Stany Zjednoczone:Nowy Jork,Los Angeles,San Francisco,Waszyngton,Chicago,Las Vegas,Miami|Japonia:Tokio,Kioto,Osaka|Chiny:Pekin,Szanghaj|Tajlandia:Bangkok|Maroko:Marrakesz|Zjednoczone Emiraty Arabskie:Dubaj|Malta:Valletta|Rumunia:Bukareszt|Bułgaria:Sofia|Słowenia:Lublana|Islandia:Reykjavik|Kanada:Toronto,Montreal|Australia:Sydney|Brazylia:Rio de Janeiro|Izrael:Jerozolima|Czarnogóra:Kotor|Albania:Tirana').split('|').flatMap(g=>{const[k,l]=g.split(':');return l.split(',').map(c=>({city:c,country:k}))});
+const nrm=x=>x.toLowerCase().replace(/ł/g,'l').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const COUNTRIES=(()=>{try{const dn=new Intl.DisplayNames(['pl'],{type:'region'}),bad=new Set(['EU','UN','EZ','QO','ZZ','XA','XB','AC','CP','DG','EA','IC','TA']),o=[];
+  for(let a=65;a<91;a++)for(let b=65;b<91;b++){const c=String.fromCharCode(a,b);if(bad.has(c))continue;const n=dn.of(c);if(n&&n!==c)o.push(n)}
+  return [...new Set(o)].sort(plc)}catch(e){return []}})();
+function mkDrop(inp,box,pickFn){
+  const d={items:[],on:-1,foot:''};
+  d.hidden=()=>box.hidden;
+  d.hide=()=>{box.hidden=true;inp.setAttribute('aria-expanded','false');d.on=-1};
+  d.draw=()=>{
+    if(!d.items.length){d.hide();return}
+    box.innerHTML=d.items.map((x,i)=>`<div role="option" data-i="${i}"${i===d.on?' class="on"':''}><b>${esc(x.main)}</b> <small>${esc(x.sub||'')}</small></div>`).join('')+(d.foot?`<div class="src">${d.foot}</div>`:'');
+    box.hidden=false;inp.setAttribute('aria-expanded','true');
+  };
+  d.pick=i=>{const x=d.items[i];if(x){pickFn(x);d.hide()}};
+  inp.addEventListener('keydown',e=>{
+    if(box.hidden)return;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();d.on=(d.on+(e.key==='ArrowDown'?1:-1)+d.items.length)%d.items.length;d.draw();const o=box.querySelector('.on');if(o)o.scrollIntoView({block:'nearest'})}
+    else if(e.key==='Enter'&&d.on>=0){e.preventDefault();d.pick(d.on)}
+    else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();d.hide()}
+  });
+  inp.addEventListener('blur',()=>setTimeout(d.hide,150));
+  box.addEventListener('pointerdown',e=>{const t=e.target.closest('[data-i]');if(t){e.preventDefault();d.pick(+t.dataset.i)}});
+  $('cdlg').addEventListener('close',d.hide);
+  return d;
 }
+let prefC='',prefCity='';
+function ctryChanged(){
+  if(nrm($('ccountry').value.trim())!==nrm(prefC)&&$('ccity').value===prefCity)$('ccity').value='';
+}
+const dc=mkDrop($('ccountry'),$('sugc'),x=>{$('ccountry').value=x.main;ctryChanged()});
+function countrySug(all){
+  const q=all?'':nrm($('ccountry').value.trim()),seen=new Set(),out=[];
+  for(const n of [...new Set(livec().map(c=>c.country))].sort(plc))if(nrm(n).startsWith(q)&&!seen.has(nrm(n))){seen.add(nrm(n));out.push({main:n,sub:'masz'})}
+  for(const n of COUNTRIES)if(nrm(n).startsWith(q)&&!seen.has(nrm(n))){seen.add(nrm(n));out.push({main:n})}
+  dc.items=out.slice(0,40);dc.on=-1;dc.draw();
+}
+$('ccountry').addEventListener('input',()=>countrySug());
+const openCtry=e=>{if(e.type==='focus')e.target.select();if(dc.hidden())countrySug(true)};
+$('ccountry').addEventListener('focus',openCtry);$('ccountry').addEventListener('click',openCtry);
+$('ccountry').addEventListener('change',ctryChanged);
+const openCity=e=>{if(e.type==='focus')e.target.select();if(dcity.hidden())sugSearch(true)};
+$('ccity').addEventListener('focus',openCity);$('ccity').addEventListener('click',openCity);
+let sugT=0,sugAbort=null;
+const dcity=mkDrop($('ccity'),$('sug'),x=>{
+  $('ccity').value=x.city;
+  if(x.country)$('ccountry').value=canon(x.country,livec().map(c=>c.country));
+});
+async function sugSearch(all){
+  const q=all?'':$('ccity').value.trim();
+  if(q.length<1&&!all){dcity.items=[];dcity.hide();return}
+  const ctry=$('ccountry').value.trim().toLowerCase(),ql=nrm(q);
+  const mine=[],seen=new Set();
+  for(const c of livec()){const k=(c.country+'|'+c.city).toLowerCase();
+    if(!seen.has(k)&&nrm(c.city).startsWith(ql)&&(!ctry||c.country.toLowerCase()===ctry)){seen.add(k);mine.push({city:c.city,country:c.country,mine:true})}}
+  mine.sort((a,b)=>plc(a.city,b.city));
+  const pop=POP.filter(c=>nrm(c.city).startsWith(ql)&&(!ctry||c.country.toLowerCase()===ctry)&&!seen.has((c.country+'|'+c.city).toLowerCase()));
+  for(const c of pop)seen.add((c.country+'|'+c.city).toLowerCase());
+  const show=l=>{dcity.items=l.map(x=>({...x,main:x.city,sub:[x.country,x.region].filter(Boolean).join(', ')+(x.mine?' · masz':'')}));dcity.on=-1;dcity.foot='Podpowiedzi: Open-Meteo';dcity.draw()};
+  let list=all?[...mine,...pop].slice(0,15):[...mine.slice(0,5),...pop].slice(0,8);show(list);
+  if(all||q.length<3)return;
+  if(sugAbort)sugAbort.abort();
+  const ac=sugAbort=new AbortController(),tm=setTimeout(()=>ac.abort(),6000);
+  try{
+    const j=await(await fetch('https://geocoding-api.open-meteo.com/v1/search?count=10&language=pl&format=json&name='+encodeURIComponent(q),{signal:ac.signal})).json();
+    if($('ccity').value.trim()!==q)return;
+    let r=(j.results||[]).map(o=>({city:o.name,country:o.country||'',region:o.admin1||''}));
+    if(ctry){const f=r.filter(o=>o.country.toLowerCase()===ctry);if(f.length)r=f}
+    for(const o of r){const k=(o.country+'|'+o.city).toLowerCase();if(!seen.has(k)){seen.add(k);list.push(o)}}
+    show(list.slice(0,10));
+  }catch(e){}finally{clearTimeout(tm)}
+}
+$('ccity').addEventListener('input',()=>{clearTimeout(sugT);sugT=setTimeout(sugSearch,250)});
 function openC(c){
   editId=c?c.id:null;cover=c?c.cover:'';coverDims=[450,300];
   $('cdt').textContent=c?'Edytuj pocztówkę':'Nowa pocztówka';
-  $('ccountry').value=c?c.country:($('fc').value||'');$('ccity').value=c?c.city:($('fci').value||'');
+  const last=(()=>{try{return JSON.parse(localStorage.getItem(LKEY))||{}}catch(e){return {}}})();
+  $('ccountry').value=c?c.country:(last.country||'Polska');$('ccity').value=c?c.city:(last.city||'');prefC=$('ccountry').value;prefCity=$('ccity').value;
   $('cdate').value=c?c.date||'':'';$('cnote').value=c?c.note||'':'';
-  $('cfile').value='';showPrev();fillDl();$('cdlg').showModal();
+  $('cfile').value='';showPrev();dc.hide();dcity.hide();$('cdlg').showModal();
 }
 const editC=id=>openC(livec().find(c=>c.id===id));
 function delC(id){if(confirm('Usunąć tę pocztówkę?')){cards=cards.map(c=>c.id===id?{id,deleted:true,updated:Date.now()}:c);save();render()}}
-$('ccountry').oninput=fillDl;
 $('cf').onsubmit=()=>{
   const country=canon($('ccountry').value,livec().map(x=>x.country));
   const city=canon($('ccity').value,livec().filter(x=>x.country.toLowerCase()===country.toLowerCase()).map(x=>x.city));
   const d={country,city,date:$('cdate').value,note:$('cnote').value.trim(),cover,updated:Date.now()};
   if(editId)cards=cards.map(c=>c.id===editId?{...c,...d}:c);
-  else cards.push({id:Date.now().toString(36),...d});
+  else{cards.push({id:Date.now().toString(36),...d});try{localStorage.setItem(LKEY,JSON.stringify({country,city}))}catch(e){}}
   save();render();
 };
 $('ccancel').onclick=()=>$('cdlg').close();
