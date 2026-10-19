@@ -77,7 +77,16 @@ label input{color:var(--tx)}
 #fbar{display:none}body.m-cards #fbar{display:flex}#fbar select{flex:1;min-width:130px}
 main.c{--w:220px}main.c.v-md{--w:150px}main.c.v-sm{--w:100px}
 main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
-.cprev{width:135px;aspect-ratio:3/2}
+.cprev{width:135px;aspect-ratio:3/2;object-fit:contain;background:var(--bd)}
+main.c .cover img{cursor:zoom-in}
+#ldlg{width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:rgba(0,0,0,.94);color:#fff}
+#ldlg[open]{display:flex;flex-direction:column}
+#lbox{flex:1;min-height:0;overflow:auto;display:flex}
+#limg{margin:auto;max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;touch-action:pan-x pan-y pinch-zoom}
+#limg.z{max-width:none;max-height:none;width:250%;cursor:zoom-out}
+#lcap{padding:12px 16px calc(12px + env(safe-area-inset-bottom));text-align:center;background:#000a}
+#lcap small{display:block;color:#bbb}
+#lclose{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;padding:0;font-size:1.3rem;background:#000a;color:#fff;border-color:#fff4}
 .cl{position:relative}
 .sug{position:absolute;left:0;right:0;top:100%;z-index:5;margin-top:2px;max-height:230px;overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 16px #0005}
 .sug div{padding:9px 10px;cursor:pointer;color:var(--tx)}.sug div.on,.sug div:hover{background:var(--bd)}
@@ -130,6 +139,8 @@ main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
   </form>
 </dialog>
 
+<dialog id="ldlg"><div id="lbox"><img id="limg" alt=""></div><div id="lcap"></div><button type="button" id="lclose" aria-label="Zamknij">✕</button></dialog>
+
 <dialog id="sdlg"><div id="sbody" class="gp"></div><div class="row" style="margin-top:12px"><button type="button" id="sclose" class="pri">Gotowe</button></div></dialog>
 <dialog id="gdlg"><div id="gbody" class="gp"></div><div class="row" style="margin-top:12px"><button type="button" id="gclose">Zamknij</button></div></dialog>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -153,7 +164,22 @@ const CKEY='biblioteka.cards',LKEY='biblioteka.last',DKEY='biblioteka.def';
 let cards=[];try{cards=JSON.parse(localStorage.getItem(CKEY))||[]}catch(e){}
 let mode=null;const livec=()=>cards.filter(c=>!c.deleted);
 const $=id=>document.getElementById(id);
-const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(books));localStorage.setItem(CKEY,JSON.stringify(cards))}catch(e){alert('Brak miejsca w pamięci przeglądarki — usuń część zdjęć.')}};
+let useIdb=false,dbp=null;
+const db=()=>dbp||(dbp=new Promise((ok,no)=>{const r=indexedDB.open('storykeep',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}));
+const idbGet=async k=>{const d=await db();return new Promise((ok,no)=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})};
+const idbSet=async(k,v)=>{const d=await db();return new Promise((ok,no)=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>ok();t.onerror=()=>no(t.error)})};
+async function initData(){
+  try{
+    const [b,c]=await Promise.all([idbGet('books'),idbGet('cards')]);
+    if(b)books=b;if(c)cards=c;
+    await idbSet('books',books);await idbSet('cards',cards);
+    useIdb=true;try{localStorage.removeItem(KEY);localStorage.removeItem(CKEY)}catch(e){}
+  }catch(e){useIdb=false}
+}
+const saveLocal=()=>{
+  if(useIdb){idbSet('books',books).then(()=>idbSet('cards',cards)).catch(()=>alert('Nie udało się zapisać danych na urządzeniu.'));return}
+  try{localStorage.setItem(KEY,JSON.stringify(books));localStorage.setItem(CKEY,JSON.stringify(cards))}catch(e){alert('Brak miejsca w pamięci przeglądarki — usuń część zdjęć.')}
+};
 let t;const save=()=>{saveLocal();clearTimeout(t);t=setTimeout(sync,1500)};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -199,7 +225,7 @@ function renderCards(){
   let l=all.filter(c=>(!fc||c.country===fc)&&(!fci||c.city===fci)&&(c.country+' '+c.city+' '+(c.note||'')).toLowerCase().includes(q));
   l.sort((a,b)=>s==='country'?cmp(a,b):s==='country-desc'?cmp(b,a):s==='date-asc'?(a.date||'').localeCompare(b.date||'')||cmp(a,b):(b.date||'').localeCompare(a.date||'')||cmp(a,b));
   $('list').innerHTML=l.length?l.map(c=>`<div class="book">
-    <div class="cover">${c.cover?`<img src="${c.cover}" alt="">`:'✉️'}</div>
+    <div class="cover">${c.cover?`<img src="${c.cover}" alt="" onclick="zoomC('${c.id}')">`:'✉️'}</div>
     <div class="info"><b>${esc(c.city)}</b><small>${esc(c.country)}</small>${c.date?`<small>${new Date(c.date).toLocaleDateString('pl-PL')}</small>`:''}${c.note?`<small>${esc(c.note)}</small>`:''}</div>
     <div class="acts"><button onclick="editC('${c.id}')">Edytuj</button><button onclick="delC('${c.id}')">Usuń</button></div>
   </div>`).join(''):'<div class="empty">'+(all.length?'Brak pocztówek dla tego filtra.':'Brak pocztówek. Dodaj pierwszą!')+'</div>';
@@ -228,10 +254,15 @@ function del(id){if(confirm('Usunąć tę książkę?')){books=books.map(b=>b.id
 function setCoverFromSrc(src){return new Promise(res=>{
   const img=new Image();
   img.onload=()=>{
-    const w=coverDims[0],h=coverDims[1],c=document.createElement('canvas');c.width=w;c.height=h;
-    const x=c.getContext('2d'),r=Math.max(w/img.width,h/img.height),sw=w/r,sh=h/r;
-    x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,w,h);
-    cover=c.toDataURL('image/jpeg',.8);showPrev();res(true)};
+    const c=document.createElement('canvas'),x=c.getContext('2d');
+    if(coverDims==='fit'){
+      const k=Math.min(1,1400/Math.max(img.width,img.height));c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+      x.drawImage(img,0,0,c.width,c.height);cover=c.toDataURL('image/jpeg',.82);
+    }else{
+      const w=coverDims[0],h=coverDims[1],r=Math.max(w/img.width,h/img.height),sw=w/r,sh=h/r;c.width=w;c.height=h;
+      x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,w,h);cover=c.toDataURL('image/jpeg',.8);
+    }
+    showPrev();res(true)};
   img.onerror=()=>res(false);img.src=src})}
 for(const id of ['file','cfile'])$(id).onchange=e=>{
   const f=e.target.files[0];if(!f)return;
@@ -401,8 +432,16 @@ async function sugSearch(all){
   }catch(e){}finally{clearTimeout(tm)}
 }
 $('ccity').addEventListener('input',()=>{clearTimeout(sugT);sugT=setTimeout(sugSearch,250)});
+function zoomC(id){
+  const c=livec().find(x=>x.id===id);if(!c||!c.cover)return;
+  $('limg').src=c.cover;$('limg').classList.remove('z');
+  $('lcap').innerHTML='<b>'+esc(c.city)+'</b><small>'+esc(c.country)+(c.date?' · '+new Date(c.date).toLocaleDateString('pl-PL'):'')+'</small>'+(c.note?'<small>'+esc(c.note)+'</small>':'');
+  $('ldlg').showModal();
+}
+$('limg').onclick=e=>{e.stopPropagation();$('limg').classList.toggle('z')};
+$('lbox').onclick=()=>$('ldlg').close();$('lclose').onclick=()=>$('ldlg').close();
 function openC(c){
-  editId=c?c.id:null;cover=c?c.cover:'';coverDims=[450,300];
+  editId=c?c.id:null;cover=c?c.cover:'';coverDims='fit';
   $('cdt').textContent=c?'Edytuj pocztówkę':'Nowa pocztówka';
   const last=(()=>{try{return JSON.parse(localStorage.getItem(LKEY))||{}}catch(e){return {}}})();
   $('ccountry').value=c?c.country:(last.country||'Polska');$('ccity').value=c?c.city:(last.city||'');prefC=$('ccountry').value;prefCity=$('ccity').value;
@@ -525,6 +564,7 @@ async function sync(){
   }catch(e){setSt('Błąd synchronizacji ('+e.message+')')}
 }
 $('gbtn').onclick=openPanel;
+initData().then(()=>{
 if(localStorage.getItem('biblioteka.on')){
   if(isNative())nativeLogin();else{
   try{const o=JSON.parse(localStorage.getItem('biblioteka.tok'));if(o&&o.e>Date.now()){tok=o.t;tokExp=o.e}}catch(e){}
@@ -533,6 +573,7 @@ if(localStorage.getItem('biblioteka.on')){
     document.addEventListener('pointerdown',e=>{if(!tok&&!e.target.closest('#gbtn'))login()},{once:true})}
 }}
 applyTheme(curTheme());setMode(localStorage.getItem(DKEY)||localStorage.getItem('biblioteka.mode')||'books');
+});
 </script>
 </body>
 </html>
