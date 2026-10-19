@@ -74,18 +74,7 @@ label{display:grid;gap:4px;font-size:.9rem;color:var(--mut)}
 label input{color:var(--tx)}
 .prev{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;border:1px solid var(--bd);display:none}
 .row{display:flex;gap:8px;justify-content:flex-end}
-body.home #app,body.home #add{display:none}body:not(.home) #home{display:none}
 #fbar{display:none}body.m-cards #fbar{display:flex}#fbar select{flex:1;min-width:130px}
-#home{max-width:1000px;margin:0 auto;padding:8px 16px 40px;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-#home .hint{grid-column:1/-1;margin:0;color:var(--mut)}
-.bw{display:grid;gap:8px;align-content:start}
-.ban{display:flex;align-items:center;gap:18px;width:100%;min-height:150px;padding:24px;border:0;border-radius:16px;color:#fff;text-align:left;box-shadow:0 4px 14px #0003;transition:transform .15s}
-.ban:hover{transform:translateY(-2px)}.ban:active{transform:none}
-.ban.b1{background:linear-gradient(135deg,var(--b1a),var(--b1b))}.ban.b2{background:linear-gradient(135deg,var(--b2a),var(--b2b))}
-.ban svg{flex:0 0 auto;width:64px;height:64px}
-.ban b{display:block;font-size:1.5rem}.ban small{display:block;margin-top:4px;opacity:.9;font-size:.9rem}
-.dflt{display:flex;flex-direction:row;gap:8px;align-items:center;color:var(--mut);font-size:.9rem}
-#sbar{align-items:center}#sect{font-size:1.15rem}
 main.c{--w:220px}main.c.v-md{--w:150px}main.c.v-sm{--w:100px}
 main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
 .cprev{width:135px;aspect-ratio:3/2}
@@ -98,13 +87,7 @@ main.c .cover{aspect-ratio:3/2}main.c.v-list{display:block}
 <body>
 <header><div><h1 id="ttl" role="button" tabindex="0" title="Pokaż statystyki"><svg viewBox="100 170 824 690" width="40" height="34" aria-hidden="true" style="vertical-align:-5px;margin-right:6px"><path d="M512 250 C420 190 290 175 150 205 L150 790 C290 760 420 775 512 835 Z" fill="#fff8ec" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 C604 190 734 175 874 205 L874 790 C734 760 604 775 512 835 Z" fill="#f3e4cb" stroke="#8b4a2b" stroke-width="40" stroke-linejoin="round"/><path d="M512 250 L512 835" stroke="#8b4a2b" stroke-width="44" stroke-linecap="round"/><g stroke="#c9a77c" stroke-width="26" stroke-linecap="round" fill="none"><path d="M235 330 C300 320 370 325 430 350"/><path d="M235 430 C300 420 370 425 430 450"/><path d="M235 530 C300 520 370 525 430 550"/><path d="M594 350 C654 325 724 320 789 330"/><path d="M594 450 C654 425 724 420 789 430"/></g><path d="M690 205 L690 430 L735 390 L780 430 L780 215 Z" fill="#d98c5f" stroke="#8b4a2b" stroke-width="22" stroke-linejoin="round"/></svg>StoryKeep <small class="chev">▾</small></h1><span class="count" id="count"></span></div><div class="hbtns"><div class="seg" id="seg" role="group" aria-label="Sekcja"><button type="button" data-m="books" title="Książki" aria-label="Książki"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M32 14C25 9 15 8 6 10v42c9-2 19-1 26 4zM32 14c7-5 17-6 26-4v42c-9-2-19-1-26 4z"/><path d="M32 14v42"/></svg></button><button type="button" data-m="cards" title="Pocztówki" aria-label="Pocztówki"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="5" y="12" width="54" height="40" rx="5"/><rect x="42" y="19" width="11" height="13" rx="1.5"/><path d="M12 24h20M12 34h20M12 43h40"/></svg></button></div><button id="gbtn" class="gbtn" title="Zaloguj przez Google" aria-label="Zaloguj przez Google"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.2 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg></button><button id="add" class="addb" title="Dodaj książkę" aria-label="Dodaj książkę"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div></header>
 <div class="bar"><span class="count" id="st"></span></div>
-<div id="home">
-  <p class="hint">Co dziś dodajesz do kolekcji?</p>
-  <div class="bw"><button class="ban b1" data-m="books"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M32 14C25 9 15 8 6 10v42c9-2 19-1 26 4zM32 14c7-5 17-6 26-4v42c-9-2-19-1-26 4z"/><path d="M32 14v42M13 22c4-1 9 0 13 2M13 31c4-1 9 0 13 2M38 24c4-2 9-3 13-2M38 33c4-2 9-3 13-2"/></svg><span><b>Książki</b><small id="hb1"></small></span></button><label class="dflt"><input type="checkbox" data-d="books"> Otwieraj domyślnie</label></div>
-  <div class="bw"><button class="ban b2" data-m="cards"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="5" y="12" width="54" height="40" rx="5"/><rect x="42" y="18" width="11" height="13" rx="1.5"/><path d="M12 22h20M12 31h20M12 40h40"/></svg><span><b>Pocztówki</b><small id="hb2"></small></span></button><label class="dflt"><input type="checkbox" data-d="cards"> Otwieraj domyślnie</label></div>
-</div>
 <div id="app">
-<div class="bar" id="sbar"><button id="homeb" type="button">← Menu</button><b id="sect"></b></div>
 <div class="bar">
   <input id="q" type="search" placeholder="Szukaj tytułu lub autora…">
   <button id="setb" title="Ustawienia widoku" aria-label="Ustawienia widoku" style="font-size:1.2rem;line-height:1">⚙</button>
@@ -190,8 +173,6 @@ function stats(){
   const bs=`<b>Przeczytane: ${all.length}</b><br>Ostatnie 7 dni: ${all.filter(b=>b.date>=wk&&b.date<=today).length}<br>W tym miesiącu: ${all.filter(b=>b.date.startsWith(mo)).length}<br>W tym roku: ${all.filter(b=>b.date.startsWith(yr)).length}`;
   const cs=`<b>Pocztówki: ${lc.length}</b><br>Kraje: ${co.size}<br>Miasta: ${ci.size}`;
   $('count').innerHTML=mode==='books'?bs:mode==='cards'?cs:bs+'<br><br>'+cs;
-  $('hb1').textContent=all.length+' '+(all.length===1?'przeczytana':'przeczytanych');
-  $('hb2').textContent=lc.length+' pocztówek · '+co.size+' krajów';
 }
 function render(){stats();if(mode==='cards')renderCards();else if(mode==='books')renderBooks()}
 function renderBooks(){
@@ -224,17 +205,14 @@ function renderCards(){
   </div>`).join(''):'<div class="empty">'+(all.length?'Brak pocztówek dla tego filtra.':'Brak pocztówek. Dodaj pierwszą!')+'</div>';
 }
 function setMode(m){
-  mode=m;document.body.classList.toggle('home',!m);document.body.classList.toggle('m-cards',m==='cards');
-  if(m){$('sect').textContent=m==='cards'?'Pocztówki':'Książki';$('q').placeholder=m==='cards'?'Szukaj kraju, miasta lub notatki…':'Szukaj tytułu lub autora…';
-    $('add').title=m==='cards'?'Dodaj pocztówkę':'Dodaj książkę';$('add').setAttribute('aria-label',$('add').title);$('q').value=''}
+  mode=m;try{localStorage.setItem('biblioteka.mode',m)}catch(e){}
+  document.body.classList.toggle('m-cards',m==='cards');
+  $('q').placeholder=m==='cards'?'Szukaj kraju, miasta lub notatki…':'Szukaj tytułu lub autora…';
+  $('add').title=m==='cards'?'Dodaj pocztówkę':'Dodaj książkę';$('add').setAttribute('aria-label',$('add').title);$('q').value='';
   document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  syncDef();render();
+  render();
 }
-function syncDef(){const d=localStorage.getItem(DKEY)||'';document.querySelectorAll('#home [data-d]').forEach(c=>c.checked=c.dataset.d===d)}
-function setDef(d){try{d?localStorage.setItem(DKEY,d):localStorage.removeItem(DKEY)}catch(e){}syncDef()}
-$('home').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b)setMode(b.dataset.m)});
-$('home').addEventListener('change',e=>{const d=e.target.dataset&&e.target.dataset.d;if(d)setDef(e.target.checked?d:'')});
-$('homeb').onclick=()=>setMode(null);
+function setDef(d){try{d?localStorage.setItem(DKEY,d):localStorage.removeItem(DKEY)}catch(e){}}
 $('seg').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b&&b.dataset.m!==mode)setMode(b.dataset.m)});
 function open_(b){
   editId=b?b.id:null;cover=b?b.cover:'';coverDims=[300,450];
@@ -510,7 +488,7 @@ async function logout(){
 function openPanel(){
   const inn=!!tok||!!localStorage.getItem('biblioteka.on'),em=localStorage.getItem('biblioteka.email');
   const df=localStorage.getItem(DKEY)||'',dr=(v,t)=>`<label><input type="radio" name="def" value="${v}" ${df===v?'checked':''}> ${t}</label>`;
-  const defs='<h3>Po otwarciu aplikacji</h3>'+dr('','Pytaj (menu główne)')+dr('books','Książki')+dr('cards','Pocztówki')+themeOpts();
+  const defs='<h3>Po otwarciu aplikacji</h3>'+dr('','Ostatnio używane')+dr('books','Książki')+dr('cards','Pocztówki')+themeOpts();
   $('gbody').innerHTML=defs+(inn
    ?`<p>Zalogowano jako<br><b>${esc(em||'konto Google')}</b></p><p class="count">${esc($('st').textContent||'')}</p><button data-a="sync" class="pri">Synchronizuj teraz</button><button data-a="switch">Przełącz konto</button><button data-a="out">Wyloguj</button>`
    :`<p>Zaloguj się, aby synchronizować listę między urządzeniami.</p><button data-a="in" class="pri">Zaloguj przez Google</button>`);
@@ -554,7 +532,7 @@ if(localStorage.getItem('biblioteka.on')){
   else{setG('☁ Zaloguj ponownie');setSt('Kliknij gdziekolwiek, aby wznowić synchronizację');
     document.addEventListener('pointerdown',e=>{if(!tok&&!e.target.closest('#gbtn'))login()},{once:true})}
 }}
-applyTheme(curTheme());setMode(localStorage.getItem(DKEY)||null);
+applyTheme(curTheme());setMode(localStorage.getItem(DKEY)||localStorage.getItem('biblioteka.mode')||'books');
 </script>
 </body>
 </html>
